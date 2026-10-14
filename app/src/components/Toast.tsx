@@ -31,6 +31,7 @@ export const Toast: React.FC<ToastProps> = ({
     <div
       className={`toast-notification toast-${type}`}
       role="status"
+      aria-label="Notificación del sistema"
       aria-live="polite"
       aria-atomic="true"
     >

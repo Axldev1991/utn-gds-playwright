@@ -90,6 +90,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .navbar-brand {
@@ -135,7 +136,8 @@ body {
 .navbar-controls {
   display: flex;
   align-items: center;
-  gap: 1.25rem;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .version-switch {
@@ -534,6 +536,7 @@ body {
   justify-content: center;
   padding: 1.5rem;
   z-index: 50;
+  overflow-y: auto;
   animation: fadeIn var(--transition-fast);
 }
 
@@ -542,6 +545,8 @@ body {
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
   width: 100%;
   padding: 1.75rem;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
@@ -843,3 +848,31 @@ body {
   from { opacity: 0; transform: translateX(100%); }
   to { opacity: 1; transform: translateX(0); }
 }
+
+/* Responsive Overrides */
+@media (max-width: 640px) {
+  .navbar-container {
+    padding: 0.75rem 1rem;
+  }
+
+  .navbar-controls {
+    width: 100%;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .modal-backdrop {
+    padding: 0.75rem;
+    align-items: flex-start;
+  }
+
+  .modal-content {
+    padding: 1.25rem 1rem;
+    max-height: 90vh;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
