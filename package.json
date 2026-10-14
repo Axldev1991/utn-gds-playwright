@@ -11,6 +11,7 @@
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:report": "playwright show-report",
     "test:e2e:trace": "playwright show-trace",
+    "test:e2e:trace-record": "playwright test --trace on",
     "demo:healing": "tsx e2e/ai-adaptive/llm-healing-demo.ts"
   },
   "devDependencies": {
