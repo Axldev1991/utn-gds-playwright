@@ -97,7 +97,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="task-form">
+        <form onSubmit={handleSubmit} className="task-form" noValidate>
           <div className="form-group">
             <label htmlFor={titleFieldId} className="form-label">
               Título
