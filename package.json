@@ -10,11 +10,13 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:report": "playwright show-report",
-    "test:e2e:trace": "playwright show-trace"
+    "test:e2e:trace": "playwright show-trace",
+    "demo:healing": "tsx e2e/ai-adaptive/llm-healing-demo.ts"
   },
   "devDependencies": {
     "@playwright/test": "^1.50.1",
     "@types/node": "^24.13.3",
+    "tsx": "^4.23.15",
     "typescript": "^5.7.0"
   }
 }

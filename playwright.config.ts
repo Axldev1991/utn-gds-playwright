@@ -6,7 +6,7 @@ import { defineConfig, devices } from '@playwright/test';
  * y orquestación desatendida del servidor de desarrollo.
  */
 export default defineConfig({
-  testDir: './e2e/tests',
+  testDir: './e2e',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 1,
