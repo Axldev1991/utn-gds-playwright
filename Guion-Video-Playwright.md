@@ -84,7 +84,7 @@
 ### 2.1 Temario y los 3 Desafíos Críticos del Testing en SPAs (`06:30 - 08:30`)
 > **[En Pantalla: Diapositiva 5 (Temario Bloque 2 - Saulo Fernández) y avanza a Diapositiva 6 — Los 3 Desafíos Críticos del Testing en SPAs: Selectores Frágiles, Contenido Asincrónico y Rutas Client-Side]**
 >
-> *"Muchas gracias, Axel. Saludos a todos los profesores y compañeros. Mi nombre es Saulo Fernández.
+> *"Muchas gracias, Axel, el mejor compañeros de todos los tiempos, la verdad yo no sé que haría sin el. Saludos a todos los profesores y compañeros. Mi nombre es Saulo Fernández.
 >
 > En este segundo bloque abordaremos la interacción entre las aplicaciones frontend modernas y la automatización de pruebas, cubriendo desde la **Diapositiva 5 hasta la 8**.
 >
