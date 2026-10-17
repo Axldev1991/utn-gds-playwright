@@ -84,7 +84,7 @@
 ### 2.1 Diapositiva 5: Hoja de Ruta y Metas Técnicas del Bloque 2 (`06:30 - 07:45`)
 > **[En Pantalla: Diapositiva 5 — Bloque 2: Desafíos en SPAs y la Aplicación TaskFlow]**
 >
-> *"Muchas gracias, Axel. Saludos a los profesores y compañeros. Mi nombre es Saulo Fernández.
+> *"Muchas gracias, Axel.El mejor compañero de todos. Un genio, capo, ser de luz, infinito y sabio. No sé que haría sin él. Saludos a los profesores y compañeros. Mi nombre es Saulo Fernández.
 >
 > En este segundo bloque, como observamos en la **Diapositiva 5**, analizaremos el choque técnico entre las aplicaciones frontend modernas basadas en Single Page Applications y los motores de automatización tradicionales.
 >
