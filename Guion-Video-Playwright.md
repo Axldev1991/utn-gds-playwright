@@ -77,67 +77,93 @@
 # BLOQUE 2: Desafíos en SPAs, la Aplicación TaskFlow y Auto-Waiting
 **Responsable:** Fernandez Ibarguren Saulo  
 **Duración:** `06:30` a `13:30` (7 minutos)  
-**Pantalla a Compartir:** Diapositiva 5 (Temario), Diapositiva 6 (Retos SPAs), Diapositiva 7 (TaskFlow SPA en Vivo y Modal Inspector) y Diapositiva 8 (Auto-waiting y Web-First Assertions).
+**Pantalla a Compartir:** Diapositiva 5 (Temario y Metas), Diapositiva 6 (Los 3 Desafíos Críticos), Diapositiva 7 (TaskFlow SPA en Vivo y Modal Inspector) y Diapositiva 8 (Sincronización Determinista vs. Esperas Ciegas).
 
 ---
 
-### 2.1 Temario y los 3 Desafíos Críticos del Testing en SPAs (`06:30 - 08:30`)
-> **[En Pantalla: Diapositiva 5 (Temario Bloque 2 - Saulo Fernández) y avanza a Diapositiva 6 — Los 3 Desafíos Críticos del Testing en SPAs: Selectores Frágiles, Contenido Asincrónico y Rutas Client-Side]**
+### 2.1 Diapositiva 5: Hoja de Ruta y Metas Técnicas del Bloque 2 (`06:30 - 07:45`)
+> **[En Pantalla: Diapositiva 5 — Bloque 2: Desafíos en SPAs y la Aplicación TaskFlow]**
 >
-> *"Muchas gracias, Axel, el mejor compañeros de todos los tiempos, la verdad yo no sé que haría sin el. Saludos a todos los profesores y compañeros. Mi nombre es Saulo Fernández.
+> *"Muchas gracias, Axel. Saludos a los profesores y compañeros. Mi nombre es Saulo Fernández.
 >
-> En este segundo bloque abordaremos la interacción entre las aplicaciones frontend modernas y la automatización de pruebas, cubriendo desde la **Diapositiva 5 hasta la 8**.
+> En este segundo bloque, como observamos en la **Diapositiva 5**, analizaremos el choque técnico entre las aplicaciones frontend modernas basadas en Single Page Applications y los motores de automatización tradicionales.
 >
-> Como observamos en la **Diapositiva 6**, cuando los ingenieros de QA se enfrentan a SPAs modernas, las herramientas tradicionales colapsan ante tres retos estructurales:
+> En la tarjeta izquierda tenemos el **Temario del Bloque**, estructurado en cuatro ejes clave:
+> 1. **Los 3 Desafíos Críticos en SPAs:** Selectores frágiles, asincronía de APIs y rutas client-side mediante History API.
+> 2. **Arquitectura de la SPA TaskFlow:** Nuestra aplicación desarrollada a medida con React 18, Vite, TypeScript y debounce reactivo de 300 milisegundos.
+> 3. **Módulo de QA Adaptativo:** El interruptor en vivo entre UI v1 y UI v2 para comprobar empíricamente la resiliencia de la suite.
+> 4. **Sincronización Determinista:** Auto-waiting y Web-First Assertions frente al antipatrón destructivo de `waitForTimeout()`.
+>
+> Y a la derecha vemos nuestras **Metas Técnicas**: erradicar los sleeps artificiales que inflan los tiempos en CI/CD, demostrar cómo diseñar una SPA desacoplada para facilitar un testing limpio, y comprobar la sincronización basada en estados reales de los componentes."*
+
+---
+
+### 2.2 Diapositiva 6: Los 3 Desafíos Críticos del Testing en SPAs (`07:45 - 09:15`)
+> **[En Pantalla: Diapositiva 6 — Los 3 Desafíos Críticos del Testing en SPAs]**
+>
+> *"Avanzando a la **Diapositiva 6**, examinamos por qué las pruebas convencionales fallan ante el dinamismo del frontend moderno a través de tres tarjetas:
 >
 > 1. ***Selectores Frágiles:***  
->    En frameworks como React, Angular o Vue, el DOM muta de manera reactiva y los estilos se compilan con utilidades o IDs dinámicos. Si las pruebas se acoplan a jerarquías CSS como `div > div:nth-child(2) > button`, cualquier refactor cosmético quiebra la suite completa generando falsos positivos.
+>    En frameworks reactivos como React, el Virtual DOM muta de forma continua y las clases CSS suelen ser dinámicas o generadas por utilidades. Como vemos en el bloque de código: si una prueba se acopla a rutas jerárquicas como `page.locator('div > div:nth-child(2) > button')`, cualquier ajuste menor de diseño romperá el selector inmediatamente, generando falsos negativos muy costosos de mantener.
 >
 > 2. ***Contenido Asincrónico y Latencia de Red:***  
->    Las llamadas a APIs introducen latencias impredecibles. El antipatrón más común —y más catastrófico— en la industria es recurrir a esperas fijas como `await page.waitForTimeout(2000)` o `Thread.sleep`. Si la red demora 2050 ms, la prueba falla falsamente; y si demora 200 ms, desperdiciamos 1.8 segundos por cada paso en los pipelines de CI/CD.
+>    Las SPAs consumen servicios asincrónicos con latencias de red impredecibles. Como observamos en el ejemplo de código, el antipatrón más común es insertar pausas fijas: `await page.waitForTimeout(2000)`. Si el servidor responde en 100 ms, desperdiciamos 1.9 segundos en cada paso; y si la red se demora 2050 ms, el test falla aleatoriamente por timeout.
 >
-> 3. ***Rutas Client-Side con History API:***  
->    En una SPA no existe el evento `window.onload` del navegador tradicional. La navegación ocurre en el cliente mediante `History.pushState`. No hay recarga completa de página, por lo que el framework de testing debe saber sincronizarse con el ciclo de vida del Virtual DOM y el renderizado asincrónico sin depender de eventos de página completa."*
+> 3. ***Rutas Client-Side sin Evento 'Load':***  
+>    En la web tradicional, navegar causaba un refresco total de página (`window.location`) con su correspondiente evento `window.onload`. En una SPA, la navegación ocurre en el cliente mediante `History.pushState`. No hay recarga de página: los componentes se montan y desmontan reactivamente, exigiendo que la herramienta sepa sincronizarse con el ciclo de vida real del componente."*
 
 ---
 
-### 2.2 La SPA TaskFlow: Banco de Pruebas Reactivo y Demostración en Vivo (`08:30 - 11:00`)
-> **[En Pantalla: Diapositiva 7 — La SPA TaskFlow: Banco de Pruebas Reactivo. Saulo expone la arquitectura y luego hace clic en el botón '▶ Abrir TaskFlow SPA en Vivo (Modal)'. Se abre el modal workbench en dos columnas: a la izquierda la SPA en vivo (http://localhost:5173) y a la derecha el 'Inspector de Selectores & DOM']**
+### 2.3 Diapositiva 7: La SPA TaskFlow y Demostración en Vivo del Inspector (`09:15 - 11:30`)
+> **[En Pantalla: Diapositiva 7 — La SPA TaskFlow: Banco de Pruebas Reactivo]**
 >
-> *"Para materializar estos desafíos en un escenario riguroso del mundo real, diseñamos y construimos la aplicación que vemos en la **Diapositiva 7**: **TaskFlow: Sprint Management & Playwright Testing Suite**.
+> *"Para someter estos desafíos a un entorno real y controlado, construimos la aplicación que vemos en la **Diapositiva 7**: **TaskFlow**.
 >
-> TaskFlow es una Single Page Application desarrollada con React 18, Vite y TypeScript, estructurada bajo una arquitectura modular limpia:
-> * **Capa de Dominio:** Tipado estricto para usuarios, tareas, estados de sprint (`backlog`, `in_progress`, `completed`) y prioridades.
-> * **Capa de Infraestructura:** Servicios desacoplados (`auth.service.ts` y `task.service.ts`) que emulan un backend real persistido en LocalStorage e incorporan **latencias asincrónicas simuladas de 300 a 600 ms** para exigir a los tests.
-> * **Debounce Reactivo de 300ms:** Implementado en la barra de búsqueda mediante un custom hook `useDebounce`, exigiendo sincronización temporal precisa.
-> * **Modales y Toasts Semánticos:** Diálogos accesibles con `role="dialog"` y notificaciones efímeras con `role="status"` que desaparecen automáticamente a los 3.5 segundos.
+> En la tarjeta izquierda observamos la **Arquitectura de la SPA (Clean UI)**:
+> * **Desacoplamiento Estricto:** Construida con React 18, Vite y TypeScript, integrando servicios simulados con latencias reales de 300 a 600 milisegundos.
+> * **Búsqueda con Debounce:** Entrada reactiva con 300 ms de retardo antes de filtrar la lista en el DOM, evaluando sincronización precisa.
+> * **Modal y Toasts Semánticos:** Diálogos accesibles con `role="dialog"` y alertas efímeras con `role="status"` que desaparecen a los 3.5 segundos.
+> * **Control de Sesión:** Manejo de autenticación y protección de rutas privadas.
 >
-> *(Saulo hace clic en '▶ Abrir TaskFlow SPA en Vivo (Modal)' y muestra la interacción)*  
+> En la tarjeta derecha tenemos el **Módulo de QA Adaptativo**: un switch que permite alternar la aplicación entre dos modos:
+> * **Modo UI v1:** Con IDs estándar como `#btn-create-task`.
+> * **Modo UI v2:** Con IDs dinámicos ofuscados como `#act_btn_new_item_99f`, pero manteniendo intacto el árbol de accesibilidad semántica.
 >
-> Observemos la pantalla: en la columna izquierda tenemos la aplicación funcional en vivo. Iniciamos sesión con `admin@taskflow.dev` y contraseña `password123`. Al pulsar 'Iniciar Sesión', vemos cómo el botón entra en estado de carga con un spinner animado accesible (`role="status"`), y luego de los 600 ms transiciona directamente al Dashboard sin recargar la página.
+> *(Saulo hace clic en el botón inferior: '▶ Abrir TaskFlow SPA en Vivo (Modal)')*  
 >
-> Y miren a la derecha nuestro **Inspector de Selectores y Árbol de Accesibilidad en tiempo real**:
-> Si conmutamos de **UI v1** a **UI v2**, observen cómo mutan instantáneamente los IDs del DOM: el ID `#btn-create-task` pasa a ser `#act_btn_new_item_99f`. Esto provoca que un selector CSS tradicional colapse con un `TimeoutError`, mientras que el Locator semántico de Playwright (`page.getByRole('button', { name: 'Nueva Tarea' })`) y el **Accessibility Tree** permanecen completamente estables y pasan sin romperse."*
+> Al abrir el modal interactivo, vemos dos columnas:
+> A la izquierda, la aplicación TaskFlow funcional en vivo en `localhost:5173`.
+> Y a la derecha, nuestro **Inspector de Selectores & DOM**.
+>
+> Observen lo que ocurre en el inspector:
+> En **UI v1**, la Caja 1 muestra el ID `#btn-create-task`, y en la Caja 3 tanto el selector por ID como el locator semántico dan `PASS`.
+> Pero al conmutar a **UI v2**, observen cómo en la Caja 1 el ID muta automáticamente a `#act_btn_new_item_99f`. En la Caja 3, el selector frágil `page.locator('#btn-create-task')` colapsa con un `TimeoutError`, mientras que el locator semántico de Playwright, `page.getByRole('button', { name: 'Nueva Tarea' })`, y el nodo del **Accessibility Tree** en la Caja 4 permanecen completamente verdes y estables.
+> *(Saulo cierra el modal pulsando Esc o el botón Cerrar)*"*
 
 ---
 
-### 2.3 Sincronización Determinista vs. Esperas Ciegas (`11:00 - 13:30`)
+### 2.4 Diapositiva 8: Sincronización Determinista vs. Esperas Ciegas (`11:30 - 13:30`)
 > **[En Pantalla: Diapositiva 8 — Sincronización Determinista vs. Esperas Ciegas: Auto-waiting y Web-First Assertions]**
 >
-> *"Habiendo comprobado empíricamente el quiebre de selectores en la SPA, en la **Diapositiva 8** profundizamos en la solución técnica que ofrece Playwright: la **Sincronización Determinista** frente a las esperas ciegas.
+> *"Habiendo demostrado empíricamente la fragilidad de los selectores en el inspector, en la **Diapositiva 8** contrastamos las dos filosofías de sincronización que vemos en pantalla:
 >
-> Como mencionamos, el antipatrón de colocar `await page.waitForTimeout(3000)` ralentiza innecesariamente las suites de pruebas y destruye la reproducibilidad en CI/CD.
+> A la izquierda, en rojo, tenemos el **Antipatrón de Esperas Fijas**:
+> Como vemos en el código:
+> ```typescript
+> await page.click('#btn-submit');
+> await page.waitForTimeout(3000); // ¡Pausa ciega!
+> await page.click('#item');
+> ```
+> Forzar un sleep de 3 segundos acumula minutos innecesarios en la suite de CI/CD, y ante cualquier fluctuación donde la red demore 3001 ms, la prueba falla de forma aleatoria, introduciendo flakiness.
 >
-> Playwright erradica este problema implementando su motor de **Auto-waiting**, el cual ejecuta automáticamente 5 comprobaciones de accionabilidad (**Actionability Checks**) antes de realizar cualquier acción:
-> 1. ***Attached:*** Comprueba que el elemento esté efectivamente conectado al DOM.
-> 2. ***Visible:*** Verifica que tenga dimensiones geométricas mayores a 0x0 y no esté oculto por CSS (`display: none` o `visibility: hidden`).
-> 3. ***Stable:*** Comprueba que el elemento no esté en medio de animaciones CSS o transformaciones de layout.
-> 4. ***Receives Events:*** Valida que el elemento esté al frente y no tapado por modales, backdrops o spinners.
-> 5. ***Enabled:*** Verifica que no tenga el atributo `disabled`.
+> A la derecha, en verde, vemos la solución de Playwright: **Auto-waiting y Web-First Assertions**:
+> ```typescript
+> await expect(page.getByRole('status'))
+>   .toHaveText('Tarea creada exitosamente');
+> ```
+> Playwright no necesita esperas ciegas porque comprueba automáticamente las condiciones de accionabilidad: verifica que el elemento esté conectado al DOM, visible, estable y habilitado. Las Web-First Assertions reintentan activamente contra el estado real de la interfaz y resuelven en el milisegundo exacto en que la notificación aparece.
 >
-> Complementariamente, Playwright introduce las **Web-First Assertions** (`expect(locator).toHaveText()`, `toBeVisible()`). A diferencia de las aserciones sincrónicas que evalúan en el instante 0, las Web-First Assertions reintentan activamente contra el estado real de la UI hasta que la condición se cumple o expira el timeout, resolviendo en el milisegundo exacto en que la UI responde.
->
-> Con estas bases de la aplicación y la sincronización clara, le doy la palabra a mi compañero Franco Esposito, quien en la **Diapositiva 9** iniciará el Bloque 3 para explicarnos la arquitectura de Page Object Model, los Custom Fixtures y la ejecución de la suite de pruebas."*
+> Con esta base de sincronización y diseño de la SPA explicada, le doy la palabra a mi compañero Franco Esposito, quien en la **Diapositiva 9** dará inicio al Bloque 3 para detallar el Page Object Model, los Custom Fixtures y la ejecución de la suite E2E."*
 
 ---
 
