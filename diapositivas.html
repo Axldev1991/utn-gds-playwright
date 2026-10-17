@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Playwright E2E & QA Adaptativo — Exposición UTN GDS</title>
+  <style>
+    :root {
+      --bg-dark: #0a0e17;
+      --card-bg: rgba(18, 24, 38, 0.85);
+      --card-border: rgba(56, 189, 248, 0.2);
+      --accent-cyan: #38bdf8;
+      --accent-blue: #3b82f6;
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+      --accent-amber: #f59e0b;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-family);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+
+    /* Barra de progreso superior */
+    #progress-container {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      position: relative;
+      z-index: 50;
+    }
+
+    #progress-bar {
+      height: 100%;
+      width: 20%;
+      background: linear-gradient(90deg, #38bdf8, #3b82f6, #6366f1);
+      transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Contenedor principal de Diapositivas */
+    #presentation {
+      flex: 1;
+      position: relative;
+      width: 100%;
+      height: calc(100vh - 56px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 3.5rem;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: 2.5rem 4rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transform: scale(0.97) translateY(15px);
+      transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s;
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1) translateY(0);
+      z-index: 10;
+    }
+
+    /* Tipografía y encabezados */
+    .institution-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--accent-cyan);
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 0.85rem;
+      width: fit-content;
+    }
+
+    h1.slide-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      line-height: 1.15;
+      background: linear-gradient(135deg, #ffffff 40%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.6rem;
+    }
+
+    h2.slide-subtitle {
+      font-size: 1.25rem;
+      font-weight: 500;
+      color: var(--accent-cyan);
+      margin-bottom: 1.75rem;
+    }
+
+    /* Grillas y tarjetas */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1.35rem;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      transition: border-color 0.25s, transform 0.25s;
+    }
+
+    .card:hover {
+      border-color: rgba(56, 189, 248, 0.45);
+      transform: translateY(-2px);
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.65rem;
+      color: #ffffff;
+    }
+
+    .card-body {
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: var(--text-muted);
+    }
+
+    .card-body strong {
+      color: #e2e8f0;
+    }
+
+    .card-body ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .card-body ul li {
+      position: relative;
+      padding-left: 1.25rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .card-body ul li::before {
+      content: "•";
+      position: absolute;
+      left: 0.25rem;
+      color: var(--accent-cyan);
+      font-weight: bold;
+    }
+
+    /* Estilos específicos Diapositiva 1 (Portada) */
+    .hero-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      height: 100%;
+    }
+
+    .members-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+      margin-top: 1.5rem;
+    }
+
+    .member-card {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 1.15rem;
+      border-left: 4px solid var(--accent-cyan);
+    }
+
+    .member-name {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .member-handle {
+      font-size: 0.85rem;
+      color: var(--accent-cyan);
+      font-family: monospace;
+      margin-bottom: 0.35rem;
+    }
+
+    .member-role {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .repo-banner {
+      margin-top: 2rem;
+      padding: 0.85rem 1.25rem;
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px dashed rgba(56, 189, 248, 0.3);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #cbd5e1;
+    }
+
+    .repo-banner span code {
+      background: #0f172a;
+      color: var(--accent-cyan);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+
+    /* Diagrama de Protocolos (Diapositiva 3) */
+    .protocol-box {
+      background: #0f172a;
+      border-radius: 8px;
+      padding: 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      font-family: monospace;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      margin-top: 0.75rem;
+    }
+
+    .protocol-step {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .tag-bad {
+      color: var(--accent-red);
+      font-weight: bold;
+    }
+    .tag-warn {
+      color: var(--accent-amber);
+      font-weight: bold;
+    }
+    .tag-good {
+      color: var(--accent-green);
+      font-weight: bold;
+    }
+
+    /* Tabla Comparativa */
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.85rem;
+      font-size: 0.88rem;
+    }
+
+    .comparison-table th, .comparison-table td {
+      padding: 0.6rem 0.85rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .comparison-table th {
+      color: var(--accent-cyan);
+      font-weight: 600;
+      background: rgba(15, 23, 42, 0.5);
+    }
+
+    .comparison-table td strong {
+      color: #ffffff;
+    }
+
+    /* Diapositiva 4: Fragilidad vs Resiliencia */
+    .compare-card-fragile {
+      border-top: 4px solid var(--accent-red);
+    }
+
+    .compare-card-resilient {
+      border-top: 4px solid var(--accent-green);
+    }
+
+    .code-snippet {
+      background: #090d16;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      padding: 0.75rem;
+      font-family: 'Consolas', monospace;
+      font-size: 0.85rem;
+      margin-top: 0.75rem;
+      color: #38bdf8;
+    }
+
+    /* Barra de Navegación Inferior */
+    #footer-nav {
+      height: 50px;
+      background: rgba(11, 15, 25, 0.95);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      z-index: 50;
+    }
+
+    .nav-left {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .btn-nav {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-main);
+      padding: 0.4rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .btn-nav:hover {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--accent-cyan);
+    }
+
+    .slide-counter {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      min-width: 60px;
+      text-align: center;
+    }
+
+    /* Panel de Notas del Presentador */
+    #notes-panel {
+      position: fixed;
+      bottom: 50px;
+      left: 0;
+      width: 100%;
+      background: rgba(15, 23, 42, 0.95);
+      border-top: 2px solid var(--accent-cyan);
+      padding: 1rem 2rem;
+      font-size: 0.92rem;
+      color: #cbd5e1;
+      display: none;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+
+    #notes-panel.visible {
+      display: block;
+    }
+
+    #notes-panel strong {
+      color: var(--accent-cyan);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Barra de progreso -->
+  <div id="progress-container">
+    <div id="progress-bar"></div>
+  </div>
+
+  <!-- Contenedor de Diapositivas -->
+  <main id="presentation">
+
+    <!-- DIAPOSITIVA 1: Portada Oficial -->
+    <section class="slide active" id="slide-1">
+      <div class="hero-container">
+        <div class="institution-tag">🏛️ Universidad Tecnológica Nacional — Cátedra GDS</div>
+        <h1 class="slide-title">Automatización de Pruebas E2E con Playwright<br>& QA Adaptativo con Inteligencia Artificial</h1>
+        <h2 class="slide-subtitle">Testing de Alta Confiabilidad y Resiliencia Semántica sobre Single Page Applications</h2>
+        
+        <div style="font-size: 1.05rem; color: #cbd5e1; margin-bottom: 0.5rem;">
+          <strong>Aplicación Bajo Prueba (AUT):</strong> <em>TaskFlow — Sprint Management & Playwright Testing Suite</em>
+        </div>
+
+        <div class="members-grid">
+          <div class="member-card">
+            <div class="member-name">Axel Castellano</div>
+            <div class="member-handle">@Axldev1991</div>
+            <div class="member-role">Bloque 1: Arquitectura y Fundamentos</div>
+          </div>
+          <div class="member-card">
+            <div class="member-name">Saulo Fernández</div>
+            <div class="member-handle">@serenomoon</div>
+            <div class="member-role">Bloque 2: Asincronía y SPA TaskFlow</div>
+          </div>
+          <div class="member-card">
+            <div class="member-name">Franco Esposito</div>
+            <div class="member-handle">@francoesposito</div>
+            <div class="member-role">Bloque 3: POM & Flujos Funcionales</div>
+          </div>
+          <div class="member-card">
+            <div class="member-name">Nicolás Rumie</div>
+            <div class="member-handle">@nicolasrumie</div>
+            <div class="member-role">Bloque 4: QA Adaptativo & Trace Viewer</div>
+          </div>
+        </div>
+
+        <div class="repo-banner">
+          <span>📦 Repositorio Oficial en GitHub: <code>github.com/Axldev1991/utn-gds-playwright</code></span>
+          <span style="color: var(--accent-cyan); font-weight: 600;">Duración: ~27:30 min</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- DIAPOSITIVA 2: Las 6 Dimensiones Ontológicas -->
+    <section class="slide" id="slide-2">
+      <div class="institution-tag">Bloque 1: Fundamentos Teóricos — Axel Castellano</div>
+      <h1 class="slide-title">Las 6 Dimensiones Ontológicas de Playwright</h1>
+      <h2 class="slide-subtitle">Indagación filosófica y técnica sobre la naturaleza y propósito del framework</h2>
+
+      <div class="grid-3">
+        <!-- 1. ¿Qué es? -->
+        <div class="card">
+          <div class="card-title">1. ¿Qué es?</div>
+          <div class="card-body">
+            Framework moderno de automatización web y testing <strong>End-to-End (E2E)</strong> de código abierto desarrollado por Microsoft.
+            <ul>
+              <li>API unificada (TypeScript, Python, Java, C#).</li>
+              <li>Soporte nativo en <strong>Chromium, Firefox y WebKit</strong>.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 2. ¿Para qué sirve? -->
+        <div class="card">
+          <div class="card-title">2. ¿Para qué sirve?</div>
+          <div class="card-body">
+            Para simular con fidelidad las acciones reales de un usuario en la aplicación:
+            <ul>
+              <li>Validar flujos de negocio completos.</li>
+              <li>Prevenir regresiones funcionales en CI/CD.</li>
+              <li>Testing cross-browser y auditoría de accesibilidad.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 3. ¿Por qué surge? -->
+        <div class="card" style="border-left: 3px solid var(--accent-amber);">
+          <div class="card-title">3. ¿Por qué surge?</div>
+          <div class="card-body">
+            La web evolucionó hacia SPAs hiper-reactivas (Virtual DOM, micro-animaciones).
+            <ul>
+              <li>Selenium sufría de <strong>Flakiness</strong> por problemas de sincronización temporal.</li>
+              <li>Playwright surge para eliminar los fallos intermitentes desde el motor del browser.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 4. ¿Cuál es su objetivo? -->
+        <div class="card">
+          <div class="card-title">4. ¿Cuál es su Objetivo?</div>
+          <div class="card-body">
+            Lograr suites de pruebas <strong>rápidas, deterministas y 100% confiables (Zero-Flakiness)</strong>.
+            <ul>
+              <li>Eliminación total de pausas artificiales (<code>sleep</code>).</li>
+              <li>Ejecución paralela masiva sin colapsar la RAM.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 5. ¿Cómo funciona? -->
+        <div class="card" style="border-left: 3px solid var(--accent-cyan);">
+          <div class="card-title">5. ¿Cómo funciona?</div>
+          <div class="card-body">
+            Conexión bidireccional única por <strong>WebSockets</strong> directa con las APIs de depuración nativas:
+            <ul>
+              <li><strong>Chrome DevTools Protocol (CDP)</strong> en Chromium.</li>
+              <li>Escucha eventos nativos en lugar de sondeo HTTP ciego.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 6. ¿Cuándo usarlo? -->
+        <div class="card">
+          <div class="card-title">6. ¿Cuándo usarlo y cuándo no?</div>
+          <div class="card-body">
+            <ul>
+              <li><strong>SÍ:</strong> Flujos críticos de negocio, SPAs complejas, multi-tab y red.</li>
+              <li><strong>NO:</strong> Pruebas unitarias de funciones puras (para esto usar Vitest o Jest en Node sin levantar browsers).</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DIAPOSITIVA 3: Comparativa Arquitectónica -->
+    <section class="slide" id="slide-3">
+      <div class="institution-tag">Bloque 1: Arquitectura de Software — Axel Castellano</div>
+      <h1 class="slide-title">Comparativa Arquitectónica: Protocolos y Procesos</h1>
+      <h2 class="slide-subtitle">Selenium WebDriver vs Cypress vs Microsoft Playwright</h2>
+
+      <div class="grid-3" style="margin-bottom: 1.25rem;">
+        <!-- Selenium -->
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-red);">Selenium WebDriver</div>
+          <div class="card-body">
+            <strong>Arquitectura de 3 Capas (HTTP REST)</strong>
+            <div class="protocol-box">
+              <span class="tag-bad">[Test Script]</span><br>
+              &nbsp;&nbsp;↓ <em>HTTP Request por comando</em><br>
+              <span class="tag-bad">[chromedriver.exe]</span><br>
+              &nbsp;&nbsp;↓ <em>HTTP / W3C Wire</em><br>
+              [Browser Process]
+            </div>
+            <p style="margin-top: 0.5rem; font-size: 0.85rem;">Alta sobrecarga de latencia acumulada y sondeo ciego (polling).</p>
+          </div>
+        </div>
+
+        <!-- Cypress -->
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-amber);">Cypress</div>
+          <div class="card-body">
+            <strong>In-Browser Runner (Iframe)</strong>
+            <div class="protocol-box">
+              [Browser Window]<br>
+              &nbsp;&nbsp;└─ [Iframe Sandbox]<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="tag-warn">[Test Script JS]</span><br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ [Application JS]
+            </div>
+            <p style="margin-top: 0.5rem; font-size: 0.85rem;">Atrapado en el hilo de la app: sin multi-pestaña real y soporte WebKit limitado.</p>
+          </div>
+        </div>
+
+        <!-- Playwright -->
+        <div class="card" style="border: 1px solid var(--accent-cyan);">
+          <div class="card-title" style="color: var(--accent-cyan);">Microsoft Playwright</div>
+          <div class="card-body">
+            <strong>Out-of-Process (WebSocket Nativo)</strong>
+            <div class="protocol-box">
+              <span class="tag-good">[Test Script]</span><br>
+              &nbsp;&nbsp;↕ <strong>Único WebSocket Bidireccional</strong><br>
+              <span class="tag-good">[Browser Engine (CDP / DevTools)]</span>
+            </div>
+            <p style="margin-top: 0.5rem; font-size: 0.85rem;">Eventos en tiempo real, control de red a nivel socket y velocidad extrema.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Jerarquía de Procesos -->
+      <div class="card" style="background: rgba(15, 23, 42, 0.9);">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <strong style="color: var(--accent-cyan);">Jerarquía de Procesos en Playwright:</strong>
+            <span style="font-size: 0.9rem; color: #cbd5e1; margin-left: 0.5rem;">
+              <code>Browser</code> (Proceso pesado del SO) ➔ <code>BrowserContext</code> (Perfil efímero en <strong>&lt;10ms</strong> con cookies y storage aislados) ➔ <code>Page</code> (Pestaña)
+            </span>
+          </div>
+          <span class="tag-good" style="font-size: 0.85rem;">Aislamiento 100% Determinista</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- DIAPOSITIVA 4: Fragilidad vs QA Adaptativo -->
+    <section class="slide" id="slide-4">
+      <div class="institution-tag">Bloque 4: QA Adaptativo & Resiliencia — Nicolás Rumie</div>
+      <h1 class="slide-title">Fragilidad de Selectores vs QA Adaptativo</h1>
+      <h2 class="slide-subtitle">Árbol DOM Interno vs Árbol de Accesibilidad (Accessibility Tree)</h2>
+
+      <div class="grid-2">
+        <!-- Columna Izquierda: Frágil -->
+        <div class="card compare-card-fragile">
+          <div class="card-title" style="color: var(--accent-red);">
+            <span>❌</span> Enfoque Tradicional Frágil (DOM Interno)
+          </div>
+          <div class="card-body">
+            <ul>
+              <li><strong>Acoplado a detalles de implementación:</strong>
+                IDs sintéticos (<code>#btn-create-task</code>), clases de Tailwind o rutas XPath rígidas (<code>//div[2]/button</code>).
+              </li>
+              <li><strong>El problema industrial:</strong>
+                Hasta un <strong>60% del tiempo de QA</strong> se pierde reparando tests rotos por cambios cosméticos del frontend.
+              </li>
+              <li><strong>Comportamiento en UI v2:</strong>
+                El botón muta a <code>#act_btn_new_item_99f</code> ➔ <strong>Colapso inmediato por TimeoutError</strong>.
+              </li>
+            </ul>
+            <div class="code-snippet" style="color: #f87171;">
+              // Roto en UI v2:<br>
+              await page.locator('#btn-create-task').click();
+            </div>
+          </div>
+        </div>
+
+        <!-- Columna Derecha: Adaptativo Semántico -->
+        <div class="card compare-card-resilient">
+          <div class="card-title" style="color: var(--accent-green);">
+            <span>✅</span> Enfoque de QA Adaptativo (Árbol A11y)
+          </div>
+          <div class="card-body">
+            <ul>
+              <li><strong>Acoplado a la intención del usuario:</strong>
+                Utiliza roles ARIA y nombres accesibles que el navegador expone para lectores de pantalla.
+              </li>
+              <li><strong>Inmunidad ante refactors visuales:</strong>
+                Las clases o IDs pueden cambiar completamente, pero el elemento sigue siendo un <code>button</code> con texto <em>"Crear Tarea"</em>.
+              </li>
+              <li><strong>Comportamiento en UI v2:</strong>
+                <strong>Pasa al 100%</strong> en ambas versiones de la interfaz sin modificar una línea de código.
+              </li>
+            </ul>
+            <div class="code-snippet" style="color: #4ade80;">
+              // Resiliente en UI v1 y v2:<br>
+              await page.getByRole('button', { name: /Crear Tarea/i }).click();
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DIAPOSITIVA 5: Conclusiones y Cierre -->
+    <section class="slide" id="slide-5">
+      <div class="institution-tag">Bloque 4: Conclusiones y Cierre — Nicolás Rumie</div>
+      <h1 class="slide-title">Conclusiones del Proyecto y Cierre Técnico</h1>
+      <h2 class="slide-subtitle">Los cuatro pilares de la ingeniería de pruebas moderna demostrados en TaskFlow</h2>
+
+      <div class="grid-2" style="margin-bottom: 1.5rem;">
+        <div class="card">
+          <div class="card-title">1. Arquitectura de Software</div>
+          <div class="card-body">
+            Aplicación estricta de <strong>SRP y Page Object Model</strong>. Desacoplamiento de localización, infraestructura con Fixtures (IoC) y especificaciones BDD.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">2. Sincronización Determinista</div>
+          <div class="card-body">
+            Erradicación total de pausas artificiales (<code>sleep</code>) mediante los <strong>5 Actionability Checks</strong> de Playwright y <em>Web-First Assertions</em>.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">3. QA Adaptativo & Self-Healing (IA)</div>
+          <div class="card-body">
+            Pruebas semánticas inmunes a rediseños y agente autónomo de IA capaz de diagnosticar fallos y autoreparar selectores con 98% de confianza.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">4. Observabilidad Total</div>
+          <div class="card-body">
+            Diagnóstico avanzado con <strong>Trace Viewer</strong>: Time-travel debugging, snapshots interactivos del DOM antes y después de cada acción, y auditoría de red.
+          </div>
+        </div>
+      </div>
+
+      <div class="repo-banner" style="background: rgba(15, 23, 42, 0.9); border: 1px solid var(--accent-cyan);">
+        <div>
+          <div style="font-size: 1.05rem; font-weight: 700; color: #ffffff;">Repositorio Oficial del Proyecto:</div>
+          <div style="color: var(--accent-cyan); font-family: monospace; font-size: 1rem;">https://github.com/Axldev1991/utn-gds-playwright</div>
+        </div>
+        <div style="font-size: 1.1rem; font-weight: 700; color: #ffffff;">
+          ¡Muchas gracias! — Espacio para Preguntas Técnicas
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Panel de Notas del Presentador -->
+  <div id="notes-panel">
+    <div id="notes-content"></div>
+  </div>
+
+  <!-- Barra de Navegación Inferior -->
+  <footer id="footer-nav">
+    <div class="nav-left">
+      <span><strong>UTN GDS</strong> — Equipo Playwright</span>
+      <span>|</span>
+      <span>Usa las flechas <strong>← / →</strong> o <strong>Espacio</strong></span>
+      <span>|</span>
+      <span>Presiona <strong>N</strong> para Notas | <strong>F</strong> para Pantalla Completa</span>
+    </div>
+
+    <div class="nav-controls">
+      <button class="btn-nav" id="btn-prev" title="Diapositiva Anterior">❮ Anterior</button>
+      <div class="slide-counter" id="slide-indicator">1 / 5</div>
+      <button class="btn-nav" id="btn-next" title="Siguiente Diapositiva">Siguiente ❯</button>
+      <button class="btn-nav" id="btn-notes" title="Ver Notas">📝 Notas</button>
+      <button class="btn-nav" id="btn-fullscreen" title="Pantalla Completa">⛶ F11</button>
+    </div>
+  </footer>
+
+  <script>
+    // Notas para cada diapositiva
+    const presenterNotes = [
+      "DIAPOSITIVA 1 (Portada): Saludar cordialmente a los docentes de GDS. Presentar al equipo y aclarar que para este TP se desarrolló desde cero una SPA completa llamada TaskFlow para someterla a pruebas reales.",
+      "DIAPOSITIVA 2 (Ontología): Recorrer las 6 preguntas ontológicas con soltura. Resaltar la Tarjeta 3 (crisis del flakiness) y la Tarjeta 5 (conexión WebSocket y CDP directo al motor del navegador).",
+      "DIAPOSITIVA 3 (Arquitectura): Explicar con el cursor del mouse la diferencia de capas: Selenium con HTTP REST lento, Cypress atrapado en el iframe, y Playwright fuera de proceso con WebSocket. Resaltar que BrowserContext se crea en <10ms.",
+      "DIAPOSITIVA 4 (QA Adaptativo): Explicar el problema industrial (60% del tiempo en mantenimiento) y contrastar el DOM frágil con el Accessibility Tree (A11y Tree). Esto da el pie para mostrar en vivo la SPA v1 vs v2.",
+      "DIAPOSITIVA 5 (Cierre): Sintetizar los 4 pilares demostrados con orgullo técnico. Mencionar el repositorio en GitHub y dar paso formal a las preguntas de defensa con los profesores."
+    ];
+
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    const progressBar = document.getElementById('progress-bar');
+    const slideIndicator = document.getElementById('slide-indicator');
+    const notesPanel = document.getElementById('notes-panel');
+    const notesContent = document.getElementById('notes-content');
+
+    function updateSlide(index) {
+      if (index < 0 || index >= totalSlides) return;
+      
+      slides.forEach((slide, i) => {
+        slide.classList.toggle('active', i === index);
+      });
+
+      currentSlide = index;
+      progressBar.style.width = `${((index + 1) / totalSlides) * 100}%`;
+      slideIndicator.textContent = `${index + 1} / ${totalSlides}`;
+      notesContent.innerHTML = `<strong>Notas del Orador:</strong> ${presenterNotes[index]}`;
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) updateSlide(currentSlide + 1);
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) updateSlide(currentSlide - 1);
+    }
+
+    function toggleNotes() {
+      notesPanel.classList.toggle('visible');
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    // Eventos de teclado
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp' || e.key === 'Backspace') {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        updateSlide(0);
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        updateSlide(totalSlides - 1);
+      } else if (e.key.toLowerCase() === 'n') {
+        e.preventDefault();
+        toggleNotes();
+      } else if (e.key.toLowerCase() === 'f') {
+        e.preventDefault();
+        toggleFullscreen();
+      }
+    });
+
+    // Eventos de botones
+    document.getElementById('btn-next').addEventListener('click', nextSlide);
+    document.getElementById('btn-prev').addEventListener('click', prevSlide);
+    document.getElementById('btn-notes').addEventListener('click', toggleNotes);
+    document.getElementById('btn-fullscreen').addEventListener('click', toggleFullscreen);
+
+    // Inicialización
+    updateSlide(0);
+  </script>
+</body>
+</html>
