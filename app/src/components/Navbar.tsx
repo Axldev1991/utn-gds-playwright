@@ -47,6 +47,31 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           </div>
 
+          {/* Botón de acceso a las Diapositivas de la Presentación */}
+          <a
+            href="/slides.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="slides-nav-btn"
+            title="Abrir Presentación de Diapositivas en pestaña completa"
+            style={{
+              textDecoration: 'none',
+              background: 'rgba(56, 189, 248, 0.12)',
+              border: '1px solid rgba(56, 189, 248, 0.35)',
+              color: '#38bdf8',
+              fontSize: '0.8rem',
+              fontWeight: 600,
+              padding: '0.3rem 0.75rem',
+              borderRadius: '9999px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              transition: 'all 0.2s ease',
+            }}
+          >
+            📊 Diapositivas
+          </a>
+
           {user && (
             <div className="user-profile">
               <span className="user-name" aria-label={`Usuario actual: ${user.name}`}>

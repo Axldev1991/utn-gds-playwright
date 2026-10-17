@@ -121,6 +121,25 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             Autocompletar credenciales
           </button>
         </div>
+
+        <div style={{ textAlign: 'center', marginTop: '1.25rem' }}>
+          <a
+            href="/slides.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: '#38bdf8',
+              fontSize: '0.85rem',
+              textDecoration: 'none',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              opacity: 0.85,
+            }}
+          >
+            📊 Ver Diapositivas de la Presentación ↗
+          </a>
+        </div>
       </div>
     </main>
   );

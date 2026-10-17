@@ -4,6 +4,7 @@
   "private": true,
   "description": "Trabajo Práctico Playwright Testing E2E & QA Adaptativo con IA - GDS UTN",
   "scripts": {
+    "dev": "npm run dev --prefix app",
     "app:dev": "npm run dev --prefix app",
     "app:build": "npm run build --prefix app",
     "test:e2e": "playwright test",
@@ -19,5 +20,10 @@
     "@types/node": "^24.13.3",
     "tsx": "^4.23.15",
     "typescript": "^5.7.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }

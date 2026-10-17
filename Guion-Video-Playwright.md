@@ -39,7 +39,7 @@
 ---
 
 ### 1.2 Las Preguntas Ontológicas de Playwright (`01:15 - 03:45`)
-> **[En Pantalla: Diapositiva 2 — Las 6 Dimensiones Ontológicas de Playwright: Qué, Para qué, Por qué, Objetivo, Cómo y Cuándo]**
+> **[En Pantalla: Diapositiva 2 (Temario Bloque 1) y Diapositiva 3 — Las 6 Dimensiones Ontológicas de Playwright: Qué, Para qué, Por qué, Objetivo, Cómo y Cuándo]**
 >
 > *"Para entender Playwright como ingenieros de software, debemos responder con rigurosidad a sus seis interrogantes fundamentales:*
 >
@@ -64,7 +64,7 @@
 ---
 
 ### 1.3 Análisis Comparativo Arquitectónico: Playwright vs Selenium vs Cypress (`03:45 - 06:00`)
-> **[En Pantalla: Diapositiva 3 — Tabla y Diagrama Comparativo de Arquitecturas: Playwright vs Selenium WebDriver vs Cypress]**
+> **[En Pantalla: Diapositiva 4 (Arquitectura Interna: CDP & WebSockets) y Diapositiva 5 (Tabla Comparativa Exhaustiva: Playwright vs Selenium vs Cypress)]**
 >
 > *"Para consolidar esta fundamentación técnica, analicemos las diferencias arquitectónicas entre los tres grandes exponentes del mercado:*
 >
@@ -81,12 +81,12 @@
 # BLOQUE 2: La Aplicación TaskFlow, Asincronía y Auto-Waiting
 **Responsable:** Fernandez Ibarguren Saulo  
 **Duración:** `06:30` a `13:30` (7 minutos)  
-**Pantalla a Compartir:** Navegador con `http://localhost:5173` y VS Code mostrando `app/src/`.
+**Pantalla a Compartir:** Diapositiva 6 (Temario) y Diapositiva 7 con Modal Workbench de TaskFlow en vivo.
 
 ---
 
 ### 2.1 Presentación en Vivo de TaskFlow SPA (`06:30 - 08:30`)
-> **[En Pantalla: Navegador abierto en http://localhost:5173 mostrando la pantalla de login con diseño oscuro y tarjeta de cristal]**
+> **[En Pantalla: Diapositiva 7. Saulo hace clic en el botón '▶ Abrir TaskFlow SPA en Vivo (Modal)'. Se abre el modal workbench en dos columnas: a la izquierda la SPA en vivo (http://localhost:5173) y a la derecha el 'Inspector de Selectores & DOM']**
 >
 > *"Muchas gracias, Axel. Saludos a todos. Mi nombre es Saulo Fernández. Como anticipó Axel, para poner a prueba a Playwright en un escenario riguroso del mundo real, diseñamos y construimos la aplicación **TaskFlow: Sprint Management & Playwright Testing Suite**.*
 >
@@ -96,13 +96,15 @@
 >
 > *Para que las pruebas automatizadas tengan un valor formativo real, incorporamos intencionalmente **latencias asincrónicas de red simuladas**: cada login demora 600 milisegundos en responder y cada carga de tareas demora 400 milisegundos.*
 >
-> *(Demostración en vivo en pantalla)*  
-> *Observemos la pantalla: ingresamos con las credenciales maestras `admin@taskflow.dev` y contraseña `password123`. Al pulsar 'Iniciar Sesión', vemos cómo el botón entra en estado de carga con un spinner animado accesible (`role="status"`), y luego de 600ms la SPA transiciona de manera fluida al Dashboard de control sin recargar la página."*
+> *(Demostración interactiva en el modal)*  
+> *Observemos la pantalla: en la columna izquierda tenemos la aplicación en vivo. Ingresamos con `admin@taskflow.dev` y contraseña `password123`. Al pulsar 'Iniciar Sesión', vemos cómo el botón entra en estado de carga con un spinner animado accesible (`role="status"`), y luego de 600ms transiciona al Dashboard sin recarga completa de página.*
+>
+> *Y miren a la derecha: integramos un **Inspector de Selectores y Árbol de Accesibilidad en tiempo real**. Si conmutamos entre el modo UI v1 estándar y UI v2 alterado, podemos ver inmediatamente cómo mutan los IDs del DOM (`btn-create-task` pasa a `act_btn_new_item_99f`), provocando que un selector CSS tradicional colapse con un `TimeoutError`, mientras que el Locator semántico de accesibilidad de Playwright sigue pasando de forma impecable sin tocar una sola línea de test."*
 
 ---
 
 ### 2.2 Desafíos de Automatización en SPAs Modernas (`08:30 - 10:30`)
-> **[En Pantalla: Dashboard de TaskFlow. Saulo interactúa con la barra de búsqueda y los filtros]**
+> **[En Pantalla: Diapositiva 8 — Desafíos de Testing en SPAs Modernas: Virtual DOM, Debounce 300ms y Toasts Efímeros]**
 >
 > *"¿Por qué las SPAs modernas son la pesadilla de las herramientas de automatización tradicionales? Principalmente por tres factores:*
 >
@@ -119,7 +121,7 @@
 ---
 
 ### 2.3 El Motor de Auto-Waiting de Playwright (`10:30 - 13:00`)
-> **[En Pantalla: Código en VS Code mostrando un test de Playwright y luego la consola]**
+> **[En Pantalla: Diapositiva 9 — El Motor de Auto-Waiting Determinista y los 5 Actionability Checks]**
 >
 > *"Aquí es donde Playwright demuestra su superioridad con su mecanismo estrella: el **Auto-waiting determinista**.*
 >
@@ -141,12 +143,12 @@
 # BLOQUE 3: Principios de Diseño, Page Object Model y Flujos Funcionales
 **Responsable:** Franco Martin Esposito  
 **Duración:** `13:30` a `20:30` (7 minutos)  
-**Pantalla a Compartir:** VS Code con `e2e/pages/` y Terminal ejecutando los tests funcionales.
+**Pantalla a Compartir:** Diapositiva 10 (Temario), Diapositiva 11 con Consola Runner E2E y Diapositivas 12-13.
 
 ---
 
 ### 3.1 Principio de Responsabilidad Única (SRP) y Mantenibilidad (`13:30 - 15:15`)
-> **[En Pantalla: VS Code mostrando el árbol de archivos en e2e/pages/ y e2e/fixtures/]**
+> **[En Pantalla: Diapositiva 10 (Temario Bloque 3) y Diapositiva 11 — Page Object Model (POM) & Custom Fixtures en TaskFlow]**
 >
 > *"Muchas gracias, Saulo. Buenas tardes a todos. Mi nombre es Franco Esposito.*
 >
@@ -155,12 +157,17 @@
 > *Para cumplir estrictamente con el **Principio de Responsabilidad Única (Single Responsibility Principle - SRP)**, separamos las incumbencias en tres capas claramente diferenciadas:*
 > 1. ***Capa de Localización e Interacción (Page Objects):*** *Encapsula la estructura del DOM, los locators semánticos y las acciones atómicas del usuario. Ningún archivo de test sabe qué selector CSS o qué rol ARIA se usa debajo.*
 > 2. ***Capa de Infraestructura y Contexto (Fixtures):*** *Gestiona el ciclo de vida de los navegadores, la limpieza de almacenamiento y la sesión autenticada mediante Inversión de Control.*
-> 3. ***Capa de Aserción y Negocio (Specs):*** *Expresa los escenarios en lenguaje BDD (Dado, Cuando, Entonces) validando las reglas de negocio sin ensuciarse con detalles de implementación."*
+> 3. ***Capa de Aserción y Negocio (Specs):*** *Expresa los escenarios en lenguaje BDD (Dado, Cuando, Entonces) validando las reglas de negocio sin ensuciarse con detalles de implementación.*
+>
+> *Siguiendo el punto de la consigna que solicita una **Spec de Testing formal**, redactamos en el repositorio (`specs/04-functional-flows-spec.md`) el documento de especificación técnica donde establecemos:*
+> * El contexto operativo de TaskFlow SPA.
+> * Las restricciones técnicas: ejecución sobre Desktop Chromium (1280x720), Desktop Firefox y emulación móvil en Mobile Chrome (Pixel 5).
+> * Y los criterios de aceptación formales en BDD para cada uno de los tres flujos críticos."*
 
 ---
 
-### 3.2 Arquitectura Page Object Model (POM) en TaskFlow (`15:15 - 17:00`)
-> **[En Pantalla: VS Code con el archivo BasePage.ts, LoginPage.ts, DashboardPage.ts y TaskModalComponent.ts en split view]**
+### 3.2 Arquitectura Page Object Model (POM) y Custom Fixtures (`15:15 - 17:00`)
+> **[En Pantalla: Diapositiva 11 — Estructura de Clases POM (BasePage, LoginPage, DashboardPage, TaskModalComponent)]**
 >
 > *"Implementamos el patrón **Page Object Model (POM)** mediante clases en TypeScript:*
 >
@@ -174,13 +181,13 @@
 ---
 
 ### 3.3 Demostración en Vivo de los 3 Flujos Críticos Cross-Browser (`17:00 - 20:00`)
-> **[En Pantalla: Terminal ejecutando la suite funcional completa en vivo y mostrando los navegadores en paralelo]**
+> **[En Pantalla: Diapositiva 11. Franco hace clic en '▶ Abrir Runner E2E Playwright (Modal)'. Se abre la consola de automatización con su menú lateral en la derecha. Franco selecciona en el menú '1. Auth Flow (02)', el comando 'npx playwright test e2e/tests/02-auth-flow.spec.ts --headed' se carga en el prompt 'franco@taskflow-e2e:~$', y presiona [Enter] en su teclado. En pantalla se abren los navegadores Chromium y Firefox ejecutando las pruebas visualmente. Luego muestra las Diapositivas 12 y 13 con el desglose de flujos y matriz cross-browser]**
 >
-> *"A continuación, ejecutaremos en vivo la suite completa que cubre los tres flujos de negocio exigidos por la cátedra:*
+> *"A continuación, ejecutaremos en vivo la suite completa que cubre los tres flujos de negocio exigidos por la cátedra.*
 >
-> *(Ejecuta en terminal: `npx playwright test e2e/tests/02-auth-flow.spec.ts e2e/tests/03-search-filter-flow.spec.ts e2e/tests/04-task-creation-flow.spec.ts`)*
+> *Directamente desde el panel de ejecución que integramos en nuestra presentación, abrimos la consola con menú lateral. Seleccionamos el comando en el menú lateral, vemos cómo se escribe en la línea de comando `franco@taskflow-e2e:~$` y presionamos **[Enter]**:*
 >
-> *Observemos la ejecución concurrente en nuestros tres targets de prueba: **Desktop Chromium**, **Desktop Firefox** y emulación móvil de **Mobile Chrome (Pixel 5)**:*
+> *Observemos la ejecución concurrente en tiempo real con navegadores visibles sobre nuestros tres targets de prueba: **Desktop Chromium**, **Desktop Firefox** y emulación móvil de **Mobile Chrome (Pixel 5)**:*
 >
 > 1. ***Flujo 1 — Autenticación y Sesión (`02-auth-flow.spec.ts`):***  
 >    *Prueba el login exitoso con transición fluida al Dashboard, el intento de login con credenciales erróneas verificando que se renderice la alerta accesible con `role="alert"`, y el logout determinista que destruye la sesión en LocalStorage y retorna al login.*
@@ -201,12 +208,12 @@
 # BLOQUE 4: QA Adaptativo, Resiliencia, Self-Healing con IA y Trace Viewer
 **Responsable:** Nicolas Rumie Vitar  
 **Duración:** `20:30` a `28:00` (7 minutos y 30 segundos)  
-**Pantalla a Compartir:** Navegador con modo v1/v2, VS Code, Terminal con script de auto-healing y ventana de Playwright Trace Viewer.
+**Pantalla a Compartir:** Diapositiva 14 (Temario), Diapositiva 15 (Consola AI Auto-Healing), Diapositiva 16 (Trace Viewer en Iframe) y Diapositiva 17 (Cierre).
 
 ---
 
 ### 4.1 La Fragilidad de Selectores en la Industria (Flakiness) (`20:30 - 22:00`)
-> **[En Pantalla: Diapositiva 4 — La Fragilidad de los Selectores de Implementación: DOM Tree vs Accessibility Tree]**
+> **[En Pantalla: Diapositiva 14 — Temario Bloque 4: QA Adaptativo, Resiliencia Semántica y Auto-Healing con LLMs]**
 >
 > *"Muchas gracias, Franco. Saludos a todos. Mi nombre es Nicolás Rumie.*
 >
@@ -220,7 +227,7 @@
 ---
 
 ### 4.2 Demostración Práctica: Mutación UI v1 vs UI v2 (`22:00 - 24:15`)
-> **[En Pantalla: Navbar de TaskFlow alternando entre modo v1 y modo v2]**
+> **[En Pantalla: Diapositiva 14 (subtema) o modal de TaskFlow alternando entre modo v1 y modo v2]**
 >
 > *"Para demostrar esto de manera empírica, incorporamos en TaskFlow un interruptor de **Modo UI** con dos versiones:*
 > * **UI v1 (Estándar):** *Utiliza identificadores y clases tradicionales como `#btn-create-task`, `.task-card` e `#input-search-tasks`.*
@@ -238,30 +245,27 @@
 ---
 
 ### 4.3 Demostración de Self-Healing con Inteligencia Artificial (`24:15 - 25:45`)
-> **[En Pantalla: VS Code ejecutando en terminal `npm run demo:healing` y abriendo el reporte generado `self-healing-report.md`]**
+> **[En Pantalla: Diapositiva 15 — Auto-Healing Autónomo Asistido por LLMs. Nicolás hace clic en '▶ Abrir Consola AI Auto-Healing (Modal)'. Se abre la consola dedicada de Inteligencia Artificial con menú lateral a la derecha. Nicolás interactúa con los 3 comandos secuenciales: selecciona '1. Cargar Quiebre (v2)', se carga en el prompt 'nicolas@ai-healing:~$', pulsa [Enter] y observa el fallo en rojo; luego selecciona '2. Cargar Agente IA', pulsa [Enter] y observa la síntesis del selector semántico resiliente con 98% de confianza; y finalmente selecciona '3. Cargar Test Resiliente', pulsa [Enter] y observa la suite 100% en verde]**
 >
-> *"Pero, ¿qué sucede cuando la mutación es tan profunda que ni siquiera los locators semánticos alcanzan? Aquí entra en juego el **QA Adaptativo con Agentes de Inteligencia Artificial (Self-Healing Tests)**.*
+> *"Pero, ¿qué sucede cuando la mutación es tan profunda que un test tradicional colapsa? Aquí entra en juego el **QA Adaptativo con Agentes de Inteligencia Artificial (Self-Healing Tests)**.*
 >
-> *Desarrollamos un módulo ejecutable autónomo en TypeScript llamado `llm-healing-demo.ts`. Cuando una prueba falla en el pipeline de CI/CD, el agente captura:*
-> 1. *El selector fallido (`#btn-create-task`).*
-> 2. *El mensaje de error exacto con el stacktrace.*
-> 3. *Una instantánea del Árbol de Accesibilidad y del DOM mutado en tiempo de ejecución.*
-> 4. *La intención de negocio del usuario.*
+> *Directamente desde nuestra presentación abrimos la consola de Auto-Healing con menú lateral:*
 >
-> *(Ejecuta en terminal: `npm run demo:healing`)*  
-> *Veamos la consola: el agente analiza los nodos candidatos, evalúa similitud semántica y emite un diagnóstico instantáneo con un score de confianza del **98%**, recomendando reemplazar el selector frágil por el locator semántico `page.getByRole('button', { name: /Crear Tarea/i })`.*
+> *En el **Paso 1**, cargamos y ejecutamos la prueba frágil sobre la interfaz alterada UI v2: observen la consola, el test falla inmediatamente con un `TimeoutError` de 30 segundos porque `#btn-create-task` ya no existe. El pipeline de CI/CD se detendría aquí.*
 >
-> *(Abre en pantalla `e2e/ai-adaptive/self-healing-report.md`)*  
-> *El agente genera automáticamente este reporte estructurado en Markdown, permitiendo que el pipeline se auto-repare en tiempo de ejecución o proponga un Pull Request con el parche correspondiente."*
+> *En el **Paso 2**, activamos nuestro agente de Inteligencia Artificial (`llm-healing-demo.ts`): el agente captura el DOM mutado, recupera la intención de negocio original y, con un nivel de confianza del **98%**, sintetiza automáticamente el selector resiliente basado en el Árbol de Accesibilidad: `page.getByRole('button', { name: /Crear Tarea/i })`.*
+>
+> *Y finalmente en el **Paso 3**, verificamos la suite con el locator reparado: la prueba pasa 100% en verde, demostrando cómo la IA transforma un fallo costoso en una auto-reparación desatendida sin intervención manual."*
 
 ---
 
 ### 4.4 Observabilidad en Acción: Demostración de Trace Viewer (`25:45 - 27:15`)
-> **[En Pantalla: Ventana interactiva de Playwright Trace Viewer abierta con una traza real]**
+> **[En Pantalla: Diapositiva 16 — Observabilidad Forense: Trace Viewer & HTML Reports. Nicolás hace clic en '▶ Abrir Playwright Trace Viewer (Modal)'. Se abre el modal con el reporte oficial y el Trace Viewer nativo de Playwright embebido en vivo en un iframe. Nicolás navega por los tests ejecutados, abre la traza interactiva e inspecciona la línea de tiempo, los DOM snapshots Before/After, el árbol accesible y las peticiones de red]**
 >
 > *"Para finalizar nuestra defensa técnica, queremos mostrar la herramienta de observabilidad más avanzada de Playwright: el **Trace Viewer**.*
 >
-> *(Abre Trace Viewer con `npx playwright show-trace test-results/.../trace.zip`)*  
+> *Directamente desde la Diapositiva 16 abrimos el modal interactivo con el reporte y visor oficial de Playwright embebido en vivo:*
+>
 > *Una captura de pantalla tradicional es una imagen congelada que no dice nada. Una traza de Playwright es un **DOM interactivo serializado** que nos permite viajar en el tiempo:*
 >
 > * *En la parte superior tenemos la **Línea de Tiempo (Filmstrip)**: podemos desplazarnos milisegundo a milisegundo y ver exactamente cómo renderizaba la pantalla.*
@@ -275,7 +279,7 @@
 ---
 
 ### 4.5 Conclusión Grupal y Cierre (`27:15 - 28:00`)
-> **[En Pantalla: Diapositiva final con resumen de logros del proyecto, enlaces al repositorio de GitHub y agradecimientos]**
+> **[En Pantalla: Diapositiva 17 — Conclusiones y los 4 Pilares de la Ingeniería de Pruebas: Arquitectura, Mantenibilidad, Resiliencia y Adaptabilidad. Enlace al repositorio GitHub y cierre del equipo]**
 >
 > *"A modo de conclusión, a lo largo de este Trabajo Práctico hemos demostrado que la automatización de pruebas moderna no consiste en grabar clics ni en acumular scripts frágiles. Consiste en diseñar una arquitectura sólida basada en estándares de ingeniería, desacoplar responsabilidades mediante Page Object Model, apalancarse en la sincronización nativa del motor de Playwright y adoptar el paradigma del QA Adaptativo y la Inteligencia Artificial para construir software robusto, resiliente y mantenible en el tiempo.*
 >

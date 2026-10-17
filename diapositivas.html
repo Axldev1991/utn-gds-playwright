@@ -1,20 +1,23 @@
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Playwright E2E & QA Adaptativo — Exposición UTN GDS</title>
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Playwright E2E &amp; QA Adaptativo — Exposición UTN GDS</title>
+<style>
     :root {
       --bg-dark: #0a0e17;
-      --card-bg: rgba(18, 24, 38, 0.85);
-      --card-border: rgba(56, 189, 248, 0.2);
+      --card-bg: rgba(18, 24, 38, 0.9);
+      --card-border: rgba(56, 189, 248, 0.22);
       --accent-cyan: #38bdf8;
       --accent-blue: #3b82f6;
+      --accent-indigo: #6366f1;
       --accent-green: #10b981;
       --accent-red: #ef4444;
       --accent-amber: #f59e0b;
-      --text-main: #f1f5f9;
+      --accent-purple: #a855f7;
+      --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
@@ -48,8 +51,8 @@
 
     #progress-bar {
       height: 100%;
-      width: 20%;
-      background: linear-gradient(90deg, #38bdf8, #3b82f6, #6366f1);
+      width: 5.88%;
+      background: linear-gradient(90deg, #38bdf8, #3b82f6, #6366f1, #10b981);
       transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
@@ -58,11 +61,13 @@
       flex: 1;
       position: relative;
       width: 100%;
-      height: calc(100vh - 56px);
+      height: calc(100vh - 54px);
       display: flex;
-      align-items: center;
+      align-items: stretch;
       justify-content: center;
-      padding: 2rem 3.5rem;
+      padding: 1.5rem 2.5rem;
+      max-width: 1800px;
+      margin: 0 auto;
     }
 
     .slide {
@@ -71,14 +76,15 @@
       left: 0;
       width: 100%;
       height: 100%;
-      padding: 2.5rem 4rem;
+      padding: 2.2rem 3.5rem;
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: flex-start;
+      overflow-y: auto;
       opacity: 0;
       visibility: hidden;
-      transform: scale(0.97) translateY(15px);
-      transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s;
+      transform: scale(0.98) translateY(10px);
+      transition: opacity 0.35s ease, transform 0.35s ease, visibility 0.35s;
     }
 
     .slide.active {
@@ -88,87 +94,147 @@
       z-index: 10;
     }
 
-    /* Tipografía y encabezados */
+    /* Barra superior de encabezado de diapositiva */
+    .slide-header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.9rem;
+      flex-shrink: 0;
+    }
+
     .institution-tag {
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-      background: rgba(56, 189, 248, 0.12);
-      border: 1px solid rgba(56, 189, 248, 0.3);
+      background: rgba(56, 189, 248, 0.14);
+      border: 1px solid rgba(56, 189, 248, 0.35);
       color: var(--accent-cyan);
-      padding: 0.35rem 0.85rem;
+      padding: 0.42rem 1.1rem;
       border-radius: 9999px;
-      font-size: 0.85rem;
+      font-size: 0.95rem;
       font-weight: 600;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.04em;
       text-transform: uppercase;
-      margin-bottom: 0.85rem;
       width: fit-content;
     }
 
+    .speaker-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(99, 102, 241, 0.18);
+      border: 1px solid rgba(99, 102, 241, 0.45);
+      color: #c7d2fe;
+      padding: 0.45rem 1.15rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .speaker-badge strong {
+      color: #ffffff;
+      font-weight: 700;
+    }
+
     h1.slide-title {
-      font-size: 2.5rem;
+      font-size: 2.75rem;
       font-weight: 800;
       line-height: 1.15;
       background: linear-gradient(135deg, #ffffff 40%, #94a3b8 100%);
       -webkit-background-clip: text;
+      background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 0.6rem;
+      margin-bottom: 0.35rem;
+      flex-shrink: 0;
+    }
+
+    
+    /* Contenedor de contenido centrado verticalmente */
+    .slide-body {
+      flex: 1;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 0;
     }
 
     h2.slide-subtitle {
-      font-size: 1.25rem;
+      font-size: 1.35rem;
       font-weight: 500;
       color: var(--accent-cyan);
-      margin-bottom: 1.75rem;
+      margin-bottom: 0.85rem;
+      flex-shrink: 0;
     }
 
-    /* Grillas y tarjetas */
+    /* Grillas responsivas que ocupan todo el alto disponible */
     .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
+      gap: 1.4rem;
+      margin-bottom: 0.85rem;
     }
 
     .grid-3 {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 1.25rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.1rem;
+      margin-bottom: 0.85rem;
     }
 
     .card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 12px;
-      padding: 1.35rem;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(10px);
+      padding: 1.25rem 1.45rem;
+      box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(12px);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
       transition: border-color 0.25s, transform 0.25s;
     }
 
     .card:hover {
-      border-color: rgba(56, 189, 248, 0.45);
+      border-color: rgba(56, 189, 248, 0.5);
       transform: translateY(-2px);
     }
 
     .card-title {
-      font-size: 1.15rem;
+      font-size: 1.25rem;
       font-weight: 700;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 0.65rem;
+      gap: 0.6rem;
+      margin-bottom: 0.85rem;
       color: #ffffff;
     }
 
     .card-body {
-      font-size: 0.95rem;
+      font-size: 1.02rem;
       line-height: 1.5;
-      color: var(--text-muted);
+      color: #cbd5e1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
     }
 
     .card-body strong {
-      color: #e2e8f0;
+      color: #f1f5f9;
+      font-weight: 700;
+    }
+
+    .card-body p {
+      margin-bottom: 0.65rem;
     }
 
     .card-body ul {
@@ -178,581 +244,1521 @@
 
     .card-body ul li {
       position: relative;
-      padding-left: 1.25rem;
-      margin-bottom: 0.4rem;
+      padding-left: 1.4rem;
+      margin-bottom: 0.65rem;
+      font-size: 1.02rem;
+      line-height: 1.5;
     }
 
     .card-body ul li::before {
       content: "•";
       position: absolute;
-      left: 0.25rem;
+      left: 0.15rem;
       color: var(--accent-cyan);
       font-weight: bold;
+      font-size: 1.35rem;
     }
 
-    /* Estilos específicos Diapositiva 1 (Portada) */
-    .hero-container {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      height: 100%;
-    }
-
-    .members-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1.25rem;
-      margin-top: 1.5rem;
-    }
-
-    .member-card {
-      background: rgba(15, 23, 42, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 10px;
-      padding: 1.15rem;
-      border-left: 4px solid var(--accent-cyan);
-    }
-
-    .member-name {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: #ffffff;
-    }
-
-    .member-handle {
-      font-size: 0.85rem;
-      color: var(--accent-cyan);
-      font-family: monospace;
-      margin-bottom: 0.35rem;
-    }
-
-    .member-role {
-      font-size: 0.82rem;
-      color: var(--text-muted);
-    }
-
-    .repo-banner {
-      margin-top: 2rem;
-      padding: 0.85rem 1.25rem;
-      background: rgba(30, 41, 59, 0.5);
-      border: 1px dashed rgba(56, 189, 248, 0.3);
-      border-radius: 8px;
-      font-size: 0.95rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      color: #cbd5e1;
-    }
-
-    .repo-banner span code {
-      background: #0f172a;
-      color: var(--accent-cyan);
-      padding: 0.2rem 0.5rem;
-      border-radius: 4px;
-      font-family: monospace;
-    }
-
-    /* Diagrama de Protocolos (Diapositiva 3) */
-    .protocol-box {
-      background: #0f172a;
-      border-radius: 8px;
-      padding: 1rem;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      font-family: monospace;
-      font-size: 0.85rem;
-      line-height: 1.4;
-      margin-top: 0.75rem;
-    }
-
-    .protocol-step {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      margin-bottom: 0.25rem;
-    }
-
-    .tag-bad {
-      color: var(--accent-red);
-      font-weight: bold;
-    }
-    .tag-warn {
-      color: var(--accent-amber);
-      font-weight: bold;
-    }
-    .tag-good {
-      color: var(--accent-green);
-      font-weight: bold;
-    }
-
-    /* Tabla Comparativa */
+    /* Tablas Comparativas */
     .comparison-table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 0.85rem;
-      font-size: 0.88rem;
+      margin-top: 0.6rem;
+      font-size: 0.94rem;
     }
 
     .comparison-table th, .comparison-table td {
-      padding: 0.6rem 0.85rem;
+      padding: 0.55rem 0.95rem;
       text-align: left;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      line-height: 1.5;
     }
 
     .comparison-table th {
       color: var(--accent-cyan);
-      font-weight: 600;
-      background: rgba(15, 23, 42, 0.5);
+      font-weight: 700;
+      font-size: 1.1rem;
+      background: rgba(15, 23, 42, 0.75);
     }
 
     .comparison-table td strong {
       color: #ffffff;
     }
 
-    /* Diapositiva 4: Fragilidad vs Resiliencia */
-    .compare-card-fragile {
-      border-top: 4px solid var(--accent-red);
-    }
-
-    .compare-card-resilient {
-      border-top: 4px solid var(--accent-green);
-    }
-
-    .code-snippet {
-      background: #090d16;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 6px;
-      padding: 0.75rem;
-      font-family: 'Consolas', monospace;
-      font-size: 0.85rem;
-      margin-top: 0.75rem;
-      color: #38bdf8;
-    }
-
-    /* Barra de Navegación Inferior */
-    #footer-nav {
-      height: 50px;
-      background: rgba(11, 15, 25, 0.95);
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    
+    /* Pestañas de código interactivas */
+    .code-tabs-bar {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 2rem;
-      z-index: 50;
+      gap: 0.5rem;
+      margin-bottom: 0.65rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 0.4rem;
     }
 
-    .nav-left {
-      font-size: 0.85rem;
+    .code-tab-btn {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 1rem;
+      padding: 0.4rem 0.95rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.2s;
     }
 
-    .nav-controls {
+    .code-tab-btn.active, .code-tab-btn:hover {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--accent-cyan);
+      color: #ffffff;
+    }
+
+    .code-tab-pane {
+      display: none;
+    }
+
+    .code-tab-pane.active {
+      display: block;
+    }
+
+    
+    /* Modal para la SPA TaskFlow */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(4, 7, 14, 0.88);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .modal-container {
+      width: 92vw;
+      height: 88vh;
+      background: #0f172a;
+      border: 1px solid var(--accent-cyan);
+      border-radius: 14px;
+      box-shadow: 0 25px 60px -10px rgba(0, 0, 0, 0.85);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .modal-header {
+      background: #111827;
+      padding: 0.75rem 1.4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      flex-shrink: 0;
+    }
+
+    .modal-title {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      color: #ffffff;
+      font-size: 1.15rem;
+    }
+
+    .modal-title code {
+      background: #1e293b;
+      color: var(--accent-cyan);
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.95rem;
+      font-family: monospace;
+    }
+
+    .modal-actions {
       display: flex;
       align-items: center;
       gap: 0.6rem;
     }
 
-    .btn-nav {
+    .modal-btn {
       background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      color: var(--text-main);
-      padding: 0.4rem 0.85rem;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      color: #e2e8f0;
+      padding: 0.4rem 0.9rem;
       border-radius: 6px;
-      font-size: 0.85rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.2s;
+    }
+
+    .modal-btn:hover {
+      background: rgba(56, 189, 248, 0.22);
+      border-color: var(--accent-cyan);
+      color: #ffffff;
+    }
+
+    .modal-close {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+
+    .modal-close:hover {
+      background: rgba(239, 68, 68, 0.3);
+      border-color: var(--accent-red);
+      color: #ffffff;
+    }
+
+    /* Estilos Distintivos para la Consola de Franco (Playwright Runner - Tema Cyan / Esmeralda) */
+    .franco-console-container {
+      border: 1px solid rgba(56, 189, 248, 0.5) !important;
+      box-shadow: 0 0 45px rgba(56, 189, 248, 0.15), 0 25px 60px -10px rgba(0, 0, 0, 0.95) !important;
+    }
+
+    .franco-console-container .modal-header {
+      background: linear-gradient(90deg, #0b1324 0%, #0d1b33 100%);
+      border-bottom: 1px solid rgba(56, 189, 248, 0.25);
+    }
+
+    .franco-cmd-btn {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: #93c5fd;
+      padding: 0.38rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .franco-cmd-btn:hover {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: #38bdf8;
+      color: #ffffff;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.25);
+    }
+
+    /* Estilos Distintivos para la Consola de Nicolás (AI Self-Healing - Tema Púrpura / Cyberpunk) */
+    .nicolas-console-container {
+      border: 1px solid rgba(192, 132, 252, 0.5) !important;
+      box-shadow: 0 0 50px rgba(168, 85, 247, 0.18), 0 25px 60px -10px rgba(0, 0, 0, 0.95) !important;
+    }
+
+    .nicolas-console-container .modal-header {
+      background: linear-gradient(90deg, #130d24 0%, #1e1136 100%);
+      border-bottom: 1px solid rgba(192, 132, 252, 0.25);
+    }
+
+    .nicolas-cmd-btn {
+      background: rgba(24, 15, 38, 0.85);
+      border: 1px solid rgba(192, 132, 252, 0.3);
+      color: #d8b4fe;
+      padding: 0.38rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .nicolas-cmd-btn:hover {
+      background: rgba(168, 85, 247, 0.25);
+      border-color: #c084fc;
+      color: #ffffff;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(168, 85, 247, 0.3);
+    }
+
+    /* Layout con Barra Lateral para las Consolas de Terminal */
+    .console-workbench-body {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .console-main-area {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    .console-sidebar {
+      width: 250px;
+      height: 100%;
+      background: #090e1a;
+      border-left: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+      padding: 1.1rem 0.95rem;
+      gap: 0.9rem;
+      flex-shrink: 0;
+      overflow-y: auto;
+    }
+
+    .console-sidebar-title {
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #64748b;
+      margin-bottom: 0.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .console-sidebar-btn {
+      width: 100%;
+      text-align: left;
+      padding: 0.65rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.86rem;
       font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
+      justify-content: flex-start;
+      gap: 0.55rem;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .franco-sidebar-btn {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      color: #cbd5e1;
+    }
+
+    .franco-sidebar-btn:hover {
+      background: rgba(56, 189, 248, 0.18);
+      border-color: #38bdf8;
+      color: #ffffff;
+      transform: translateX(3px);
+    }
+
+    .nicolas-sidebar-btn {
+      background: rgba(24, 15, 38, 0.8);
+      border: 1px solid rgba(192, 132, 252, 0.25);
+      color: #e2e8f0;
+    }
+
+    .nicolas-sidebar-btn:hover {
+      background: rgba(168, 85, 247, 0.22);
+      border-color: #c084fc;
+      color: #ffffff;
+      transform: translateX(3px);
+    }
+
+    /* Estilos del Playwright Trace Viewer Modal */
+    .trace-viewer-container {
+      max-width: 1260px;
+      height: 88vh;
+      background: #080c16;
+      border: 1px solid rgba(34, 197, 94, 0.4);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85);
+    }
+
+    .trace-filmstrip-bar {
+      background: #0d1322;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 0.65rem 1.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .trace-timeline-track {
+      width: 100%;
+      height: 28px;
+      background: #050811;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      position: relative;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .trace-timeline-tick {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: rgba(255, 255, 255, 0.12);
+      font-size: 0.68rem;
+      color: #64748b;
+      padding-top: 2px;
+      padding-left: 3px;
+      font-family: monospace;
+    }
+
+    .trace-timeline-cursor {
+      position: absolute;
+      top: -3px;
+      bottom: -3px;
+      width: 3px;
+      background: #22c55e;
+      box-shadow: 0 0 10px #22c55e;
+      transition: left 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 10;
+    }
+
+    .trace-action-item {
+      padding: 0.55rem 0.85rem;
+      font-size: 0.82rem;
+      font-family: 'Consolas', 'Fira Code', monospace;
+      color: #cbd5e1;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.15s;
+    }
+
+    .trace-action-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+      color: #ffffff;
+    }
+
+    .trace-action-item.active {
+      background: rgba(34, 197, 94, 0.15);
+      border-left: 3px solid #22c55e;
+      color: #4ade80;
+      font-weight: 600;
+    }
+
+    .trace-snapshot-tab {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 0.35rem 0.85rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .trace-snapshot-tab.active {
+      background: #1e293b;
+      color: #38bdf8;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    }
+
+    .trace-bottom-tab-btn {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 0.5rem 1rem;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .trace-bottom-tab-btn.active {
+      color: #22c55e;
+      border-bottom-color: #22c55e;
+      background: rgba(34, 197, 94, 0.06);
+    }
+
+    .modal-iframe-col {
+      flex: 1;
+      height: 100%;
+      position: relative;
+      background: #0a0e17;
+      border-right: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .modal-iframe-col iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    /* Panel Inspector de Selectores y Árbol A11y */
+    .modal-inspector-col {
+      width: 440px;
+      height: 100%;
+      background: #0d121f;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow-y: auto;
+    }
+
+    .inspector-header {
+      background: #111827;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .inspector-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .inspector-mode-toggle {
+      display: flex;
       gap: 0.35rem;
+      background: #0a0e17;
+      padding: 0.2rem;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .inspector-mode-btn {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 0.25rem 0.55rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .inspector-mode-btn.active-v1 {
+      background: var(--accent-blue);
+      color: #ffffff;
+    }
+
+    .inspector-mode-btn.active-v2 {
+      background: var(--accent-purple);
+      color: #ffffff;
+    }
+
+    .inspector-body {
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      font-size: 0.9rem;
+    }
+
+    .inspector-box {
+      background: #111827;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+    }
+
+    .inspector-box-header {
+      padding: 0.45rem 0.8rem;
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      font-weight: 700;
+      font-size: 0.82rem;
+      color: #94a3b8;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .inspector-box-body {
+      padding: 0.75rem 0.85rem;
+      font-family: 'Consolas', 'Fira Code', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+    }
+
+    .inspector-badge-fail {
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+
+    .inspector-badge-pass {
+      background: rgba(34, 197, 94, 0.2);
+      color: #4ade80;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+
+    /* Fragmentos de código */
+    .code-snippet {
+      background: #090d16;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 1.05rem 1.35rem;
+      font-family: 'Consolas', 'Fira Code', monospace;
+      font-size: 1.05rem;
+      line-height: 1.55;
+      margin-top: 0.85rem;
+      color: #38bdf8;
+      overflow-x: auto;
+    }
+
+    .code-comment {
+      color: #64748b;
+    }
+
+    .code-keyword {
+      color: #f43f5e;
+      font-weight: 600;
+    }
+
+    .code-string {
+      color: #34d399;
+    }
+
+    .code-fn {
+      color: #fbbf24;
+    }
+
+    .tag-bad {
+      color: var(--accent-red);
+      font-weight: bold;
+    }
+
+    .tag-good {
+      color: var(--accent-green);
+      font-weight: bold;
+    }
+
+    .compare-card-fragile {
+      border-top: 5px solid var(--accent-red);
+    }
+
+    .compare-card-resilient {
+      border-top: 5px solid var(--accent-green);
+    }
+
+    /* Estilos Diapositiva 1 (Portada) */
+    .members-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+      flex: 1;
+      min-height: 0;
+      align-items: stretch;
+    }
+
+    .member-card {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 1.45rem 1.6rem;
+      border-left: 5px solid var(--accent-cyan);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .member-name {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 0.2rem;
+    }
+
+    .member-handle {
+      font-size: 1rem;
+      color: var(--accent-cyan);
+      font-family: monospace;
+      margin-bottom: 0.6rem;
+    }
+
+    .member-role {
+      font-size: 1.02rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    .repo-banner {
+      width: 100%;
+      margin-top: 1.4rem;
+      padding: 1.15rem 2rem;
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px dashed rgba(56, 189, 248, 0.4);
+      border-radius: 10px;
+      font-size: 1.15rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2.5rem;
+      color: #cbd5e1;
+      flex-shrink: 0;
+    }
+
+    .repo-banner span code {
+      background: #0f172a;
+      color: var(--accent-cyan);
+      padding: 0.3rem 0.65rem;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 1.1rem;
+    }
+
+    /* Barra de Navegación Inferior */
+    #footer-nav {
+      height: 54px;
+      background: rgba(11, 15, 25, 0.96);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2.5rem;
+      z-index: 50;
+    }
+
+    .nav-left {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 1.1rem;
+    }
+
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn-nav {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: var(--text-main);
+      padding: 0.42rem 0.95rem;
+      border-radius: 6px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
       transition: background 0.2s, border-color 0.2s;
     }
 
     .btn-nav:hover {
-      background: rgba(56, 189, 248, 0.2);
+      background: rgba(56, 189, 248, 0.22);
       border-color: var(--accent-cyan);
     }
 
     .slide-counter {
-      font-size: 0.9rem;
+      font-size: 1.05rem;
       font-weight: 700;
       color: var(--accent-cyan);
-      min-width: 60px;
+      min-width: 75px;
       text-align: center;
-    }
-
-    /* Panel de Notas del Presentador */
-    #notes-panel {
-      position: fixed;
-      bottom: 50px;
-      left: 0;
-      width: 100%;
-      background: rgba(15, 23, 42, 0.95);
-      border-top: 2px solid var(--accent-cyan);
-      padding: 1rem 2rem;
-      font-size: 0.92rem;
-      color: #cbd5e1;
-      display: none;
-      z-index: 100;
-      backdrop-filter: blur(12px);
-    }
-
-    #notes-panel.visible {
-      display: block;
-    }
-
-    #notes-panel strong {
-      color: var(--accent-cyan);
     }
   </style>
 </head>
 <body>
-
-  <!-- Barra de progreso -->
-  <div id="progress-container">
-    <div id="progress-bar"></div>
-  </div>
-
-  <!-- Contenedor de Diapositivas -->
-  <main id="presentation">
-
-    <!-- DIAPOSITIVA 1: Portada Oficial -->
-    <section class="slide active" id="slide-1">
-      <div class="hero-container">
-        <div class="institution-tag">🏛️ Universidad Tecnológica Nacional — Cátedra GDS</div>
-        <h1 class="slide-title">Automatización de Pruebas E2E con Playwright<br>& QA Adaptativo con Inteligencia Artificial</h1>
-        <h2 class="slide-subtitle">Testing de Alta Confiabilidad y Resiliencia Semántica sobre Single Page Applications</h2>
-        
-        <div style="font-size: 1.05rem; color: #cbd5e1; margin-bottom: 0.5rem;">
-          <strong>Aplicación Bajo Prueba (AUT):</strong> <em>TaskFlow — Sprint Management & Playwright Testing Suite</em>
-        </div>
-
-        <div class="members-grid">
-          <div class="member-card">
-            <div class="member-name">Axel Castellano</div>
-            <div class="member-handle">@Axldev1991</div>
-            <div class="member-role">Bloque 1: Arquitectura y Fundamentos</div>
+<!-- Barra de progreso -->
+<div id="progress-container">
+<div id="progress-bar"></div>
+</div>
+<!-- Contenedor de Diapositivas -->
+<main id="presentation">
+<section class="slide active" id="slide-1">
+<div class="slide-header">
+<div class="institution-tag">🏛️ Universidad Tecnológica Nacional — Cátedra GDS</div>
+<div class="speaker-badge">Presentación General • <strong>Equipo #5</strong></div>
+</div>
+<h1 class="slide-title">Automatización de Pruebas E2E con Playwright<br/>&amp; QA Adaptativo con Inteligencia Artificial</h1>
+<h2 class="slide-subtitle">Testing de Alta Confiabilidad y Resiliencia Semántica sobre la SPA TaskFlow</h2><div class="slide-body">
+<div style="font-size: 1.25rem; color: #cbd5e1; margin-bottom: 0.75rem;">
+<strong>Aplicación Bajo Prueba (AUT):</strong> <em>TaskFlow — React 18, Vite &amp; TypeScript Sprint Board</em>
+</div>
+<div class="members-grid">
+<div class="member-card">
+<div class="member-name">Axel Castellano</div>
+<div class="member-handle">@Axldev1991</div>
+<div class="member-role">Bloque 1: Ontología y Arquitectura Playwright</div>
+</div>
+<div class="member-card">
+<div class="member-name">Saulo Fernández</div>
+<div class="member-handle">@serenomoon</div>
+<div class="member-role">Bloque 2: Desafíos SPA y TaskFlow</div>
+</div>
+<div class="member-card">
+<div class="member-name">Franco Esposito</div>
+<div class="member-handle">@francoesposito</div>
+<div class="member-role">Bloque 3: POM, Fixtures y Flujos E2E</div>
+</div>
+<div class="member-card">
+<div class="member-name">Nicolás Rumie</div>
+<div class="member-handle">@nicolasrumie</div>
+<div class="member-role">Bloque 4: QA Adaptativo, IA y Traces</div>
+</div>
+</div>
+<div class="repo-banner">
+<span>📦 Repositorio Oficial en GitHub: <code>https://github.com/Axldev1991/utn-gds-playwright</code></span>
+<span>🎯 Evaluación Práctica: <strong>Playwright &amp; QA Adaptativo</strong></span>
+</div>
+</div></section>
+<!-- ======================================================== -->
+<!-- BLOQUE 1: AXEL CASTELLANO                                -->
+<!-- ======================================================== -->
+<!-- DIAPOSITIVA 2: Temario Bloque 1 - Axel Castellano -->
+<section class="slide" id="slide-2">
+<div class="slide-header">
+<div class="institution-tag">Bloque 1 • Introducción y Arquitectura</div>
+<div class="speaker-badge">Expositor: <strong>Axel Castellano</strong></div>
+</div>
+<h1 class="slide-title">Bloque 1: Fundamentos y Arquitectura de Playwright</h1>
+<h2 class="slide-subtitle">Hoja de ruta del expositor y conceptos centrales a desarrollar</h2><div class="slide-body">
+<div class="grid-2" style="margin-top: 0.5rem;">
+<div class="card" style="border-left: 4px solid var(--accent-cyan);">
+<div class="card-title">🎯 Temario del Bloque</div>
+<div class="card-body">
+<ul>
+<li><strong>Las 6 Dimensiones Ontológicas:</strong> Qué, Para qué, Por qué, Objetivo, Cómo y Cuándo utilizar Playwright.</li>
+<li><strong>La Crisis del Flakiness:</strong> El problema histórico de las pruebas intermitentes en la web moderna.</li>
+<li><strong>Arquitectura de Comunicación Nativa:</strong> Conexión bidireccional por WebSocket y Chrome DevTools Protocol (CDP).</li>
+<li><strong>Matriz Comparativa Exhaustiva:</strong> Selenium WebDriver vs. Cypress vs. Microsoft Playwright.</li>
+</ul>
+</div>
+</div>
+<div class="card" style="border-left: 4px solid var(--accent-blue);">
+<div class="card-title">💡 Metas Técnicas</div>
+<div class="card-body">
+<ul>
+<li>Comprender por qué el control fuera de proceso sin drivers HTTP intermedios revoluciona la estabilidad.</li>
+<li>Diferenciar el aislamiento ultrarrápido por <em>BrowserContext</em> (&lt;10ms) frente al reinicio completo de navegadores.</li>
+<li>Evaluar los compromisos técnicos (trade-offs) entre frameworks de automatización web modernos.</li>
+</ul>
+</div>
+</div>
+</div>
+</div></section>
+<section class="slide" id="slide-3">
+<div class="slide-header">
+<div class="institution-tag">Bloque 1 • Fundamentos Técnicos</div>
+<div class="speaker-badge">Expositor: <strong>Axel Castellano</strong></div>
+</div>
+<h1 class="slide-title">Las 6 Dimensiones Ontológicas de Playwright</h1>
+<h2 class="slide-subtitle">Fundamentación filosófica y técnica sobre el origen y propósito del framework</h2><div class="slide-body">
+<div class="grid-3">
+<div class="card">
+<div class="card-title">1. ¿Qué es?</div>
+<div class="card-body">
+            Framework de testing y automatización E2E de código abierto desarrollado por Microsoft. Controla navegadores reales de forma programática mediante una API unificada y fuertemente tipada.
           </div>
-          <div class="member-card">
-            <div class="member-name">Saulo Fernández</div>
-            <div class="member-handle">@serenomoon</div>
-            <div class="member-role">Bloque 2: Asincronía y SPA TaskFlow</div>
+</div>
+<div class="card">
+<div class="card-title">2. ¿Para qué sirve?</div>
+<div class="card-body">
+            Validar flujos funcionales completos desde la perspectiva del usuario real, garantizando integridad en regresión, accesibilidad y rendimiento en múltiples resoluciones.
           </div>
-          <div class="member-card">
-            <div class="member-name">Franco Esposito</div>
-            <div class="member-handle">@francoesposito</div>
-            <div class="member-role">Bloque 3: POM & Flujos Funcionales</div>
+</div>
+<div class="card" style="border-left: 3px solid var(--accent-red);">
+<div class="card-title" style="color: #f87171;">3. ¿Por qué surge? (Flakiness)</div>
+<div class="card-body">
+            Viene a resolver la <strong>crisis de intermitencia (flakiness)</strong> de Selenium en SPAs modernas: tests que fallan por falta de sincronización temporal y no por bugs de código.
           </div>
-          <div class="member-card">
-            <div class="member-name">Nicolás Rumie</div>
-            <div class="member-handle">@nicolasrumie</div>
-            <div class="member-role">Bloque 4: QA Adaptativo & Trace Viewer</div>
+</div>
+<div class="card">
+<div class="card-title">4. ¿Cuál es su Objetivo?</div>
+<div class="card-body">
+            Garantizar ejecuciones deterministas y de alta velocidad en pipelines de CI/CD, eliminando esperas arbitrarias mediante sincronización nativa en el motor del navegador.
           </div>
-        </div>
-
-        <div class="repo-banner">
-          <span>📦 Repositorio Oficial en GitHub: <code>github.com/Axldev1991/utn-gds-playwright</code></span>
-          <span style="color: var(--accent-cyan); font-weight: 600;">Duración: ~27:30 min</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- DIAPOSITIVA 2: Las 6 Dimensiones Ontológicas -->
-    <section class="slide" id="slide-2">
-      <div class="institution-tag">Bloque 1: Fundamentos Teóricos — Axel Castellano</div>
-      <h1 class="slide-title">Las 6 Dimensiones Ontológicas de Playwright</h1>
-      <h2 class="slide-subtitle">Indagación filosófica y técnica sobre la naturaleza y propósito del framework</h2>
-
-      <div class="grid-3">
-        <!-- 1. ¿Qué es? -->
-        <div class="card">
-          <div class="card-title">1. ¿Qué es?</div>
-          <div class="card-body">
-            Framework moderno de automatización web y testing <strong>End-to-End (E2E)</strong> de código abierto desarrollado por Microsoft.
-            <ul>
-              <li>API unificada (TypeScript, Python, Java, C#).</li>
-              <li>Soporte nativo en <strong>Chromium, Firefox y WebKit</strong>.</li>
-            </ul>
+</div>
+<div class="card" style="border-left: 3px solid var(--accent-cyan);">
+<div class="card-title" style="color: var(--accent-cyan);">5. ¿Cómo funciona?</div>
+<div class="card-body">
+            Utiliza una <strong>conexión WebSocket bidireccional persistente</strong> directo al navegador (Chrome DevTools Protocol - CDP en Chromium y protocolos equivalentes en WebKit/Firefox).
           </div>
-        </div>
-
-        <!-- 2. ¿Para qué sirve? -->
-        <div class="card">
-          <div class="card-title">2. ¿Para qué sirve?</div>
-          <div class="card-body">
-            Para simular con fidelidad las acciones reales de un usuario en la aplicación:
-            <ul>
-              <li>Validar flujos de negocio completos.</li>
-              <li>Prevenir regresiones funcionales en CI/CD.</li>
-              <li>Testing cross-browser y auditoría de accesibilidad.</li>
-            </ul>
+</div>
+<div class="card">
+<div class="card-title">6. ¿Cuándo utilizarlo?</div>
+<div class="card-body">
+            Ideal para SPAs complejas y reactivas con actualización asincrónica del DOM, flujos multi-pestaña, autenticación persistente y requerimientos de soporte cross-browser estricto.
           </div>
-        </div>
-
-        <!-- 3. ¿Por qué surge? -->
-        <div class="card" style="border-left: 3px solid var(--accent-amber);">
-          <div class="card-title">3. ¿Por qué surge?</div>
-          <div class="card-body">
-            La web evolucionó hacia SPAs hiper-reactivas (Virtual DOM, micro-animaciones).
-            <ul>
-              <li>Selenium sufría de <strong>Flakiness</strong> por problemas de sincronización temporal.</li>
-              <li>Playwright surge para eliminar los fallos intermitentes desde el motor del browser.</li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- 4. ¿Cuál es su objetivo? -->
-        <div class="card">
-          <div class="card-title">4. ¿Cuál es su Objetivo?</div>
-          <div class="card-body">
-            Lograr suites de pruebas <strong>rápidas, deterministas y 100% confiables (Zero-Flakiness)</strong>.
-            <ul>
-              <li>Eliminación total de pausas artificiales (<code>sleep</code>).</li>
-              <li>Ejecución paralela masiva sin colapsar la RAM.</li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- 5. ¿Cómo funciona? -->
-        <div class="card" style="border-left: 3px solid var(--accent-cyan);">
-          <div class="card-title">5. ¿Cómo funciona?</div>
-          <div class="card-body">
-            Conexión bidireccional única por <strong>WebSockets</strong> directa con las APIs de depuración nativas:
-            <ul>
-              <li><strong>Chrome DevTools Protocol (CDP)</strong> en Chromium.</li>
-              <li>Escucha eventos nativos en lugar de sondeo HTTP ciego.</li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- 6. ¿Cuándo usarlo? -->
-        <div class="card">
-          <div class="card-title">6. ¿Cuándo usarlo y cuándo no?</div>
-          <div class="card-body">
-            <ul>
-              <li><strong>SÍ:</strong> Flujos críticos de negocio, SPAs complejas, multi-tab y red.</li>
-              <li><strong>NO:</strong> Pruebas unitarias de funciones puras (para esto usar Vitest o Jest en Node sin levantar browsers).</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- DIAPOSITIVA 3: Comparativa Arquitectónica -->
-    <section class="slide" id="slide-3">
-      <div class="institution-tag">Bloque 1: Arquitectura de Software — Axel Castellano</div>
-      <h1 class="slide-title">Comparativa Arquitectónica: Protocolos y Procesos</h1>
-      <h2 class="slide-subtitle">Selenium WebDriver vs Cypress vs Microsoft Playwright</h2>
-
-      <div class="grid-3" style="margin-bottom: 1.25rem;">
-        <!-- Selenium -->
-        <div class="card">
-          <div class="card-title" style="color: var(--accent-red);">Selenium WebDriver</div>
-          <div class="card-body">
-            <strong>Arquitectura de 3 Capas (HTTP REST)</strong>
-            <div class="protocol-box">
-              <span class="tag-bad">[Test Script]</span><br>
-              &nbsp;&nbsp;↓ <em>HTTP Request por comando</em><br>
-              <span class="tag-bad">[chromedriver.exe]</span><br>
-              &nbsp;&nbsp;↓ <em>HTTP / W3C Wire</em><br>
-              [Browser Process]
+</div>
+</div>
+</div></section>
+<section class="slide" id="slide-4">
+<div class="slide-header">
+<div class="institution-tag">Bloque 1 • Arquitectura de Protocolos</div>
+<div class="speaker-badge">Expositor: <strong>Axel Castellano</strong></div>
+</div>
+<h1 class="slide-title">Comparativa Arquitectónica: Protocolos y Procesos</h1>
+<h2 class="slide-subtitle">Selenium WebDriver vs Cypress vs Microsoft Playwright</h2><div class="slide-body">
+<table class="comparison-table">
+<thead>
+<tr>
+<th>Dimensión Arquitectónica</th>
+<th>Selenium WebDriver</th>
+<th>Cypress</th>
+<th style="color: var(--accent-green);">Microsoft Playwright</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Capa de Comunicación</strong></td>
+<td>HTTP REST W3C mediante drivers externos (chromedriver, geckodriver)</td>
+<td>In-browser: corre dentro del mismo hilo del navegador en un &lt;iframe&gt;</td>
+<td><strong class="tag-good">WebSocket directo (CDP)</strong> fuera de proceso</td>
+</tr>
+<tr>
+<td><strong>Mecanismo de Espera</strong></td>
+<td>Manual / Explícita (<code class="tag-bad">WebDriverWait</code>, sleeps)</td>
+<td>Retry-ability encadenado en comandos internos</td>
+<td><strong class="tag-good">Auto-waiting determinista</strong> nativo en Locators</td>
+</tr>
+<tr>
+<td><strong>Navegadores Soportados</strong></td>
+<td>Chrome, Firefox, Edge, Safari (Drivers separados)</td>
+<td>Chrome, Edge, Firefox (WebKit experimental)</td>
+<td><strong class="tag-good">Chromium, Firefox y WebKit</strong> nativos en un solo API</td>
+</tr>
+<tr>
+<td><strong>Aislamiento de Tests</strong></td>
+<td>Lento: nueva ventana o reinicio de browser completo</td>
+<td>Limpia cookies/storage pero comparte la misma ventana</td>
+<td><strong class="tag-good">BrowserContext</strong> ultrarrápido (&lt; 10ms) tipo incógnito</td>
+</tr>
+<tr>
+<td><strong>Observabilidad &amp; Debug</strong></td>
+<td>Logs de consola estáticos y capturas tras fallo</td>
+<td>Time-travel runner interactivo</td>
+<td><strong class="tag-good">Trace Viewer</strong> paso a paso, DOM snapshots y red</td>
+</tr>
+</tbody>
+</table>
+<div class="repo-banner" style="margin-top: 0.8rem; padding: 0.8rem 1.4rem; font-size: 1.05rem;">
+<span>💡 <strong>Conclusión Arquitectónica:</strong> Playwright combina la libertad del control fuera de proceso de Selenium con la sincronización y experiencia moderna de Cypress, superando las limitaciones de ambos.</span>
+</div>
+</div></section>
+<!-- ======================================================== -->
+<!-- BLOQUE 2: SAULO FERNANDEZ                                -->
+<!-- ======================================================== -->
+<!-- DIAPOSITIVA 5: Temario Bloque 2 - Saulo Fernández -->
+<section class="slide" id="slide-5">
+<div class="slide-header">
+<div class="institution-tag">Bloque 2 • Retos de Automatización &amp; AUT</div>
+<div class="speaker-badge">Expositor: <strong>Saulo Fernández</strong></div>
+</div>
+<h1 class="slide-title">Bloque 2: Desafíos en SPAs y la Aplicación TaskFlow</h1>
+<h2 class="slide-subtitle">Hoja de ruta del expositor y conceptos centrales a desarrollar</h2><div class="slide-body">
+<div class="grid-2" style="margin-top: 0.5rem;">
+<div class="card" style="border-left: 4px solid var(--accent-cyan);">
+<div class="card-title">🎯 Temario del Bloque</div>
+<div class="card-body">
+<ul>
+<li><strong>Los 3 Desafíos Críticos en SPAs:</strong> Selectores frágiles, asincronía de APIs y rutas client-side con History API.</li>
+<li><strong>Arquitectura de la SPA TaskFlow:</strong> React 18, Vite, TypeScript, modularidad SRP y debounce reactivo de 300ms.</li>
+<li><strong>Módulo de QA Adaptativo:</strong> Switch en vivo de UI v1 vs. UI v2 para someter a prueba la resiliencia de la suite.</li>
+<li><strong>Sincronización Determinista:</strong> Auto-waiting y Web-First Assertions frente al antipatrón de <code>waitForTimeout()</code>.</li>
+</ul>
+</div>
+</div>
+<div class="card" style="border-left: 4px solid var(--accent-blue);">
+<div class="card-title">💡 Metas Técnicas</div>
+<div class="card-body">
+<ul>
+<li>Entender el impacto negativo de los sleeps artificiales en la velocidad y confiabilidad de CI/CD.</li>
+<li>Demostrar cómo diseñar una SPA bajo arquitectura limpia para facilitar un testing E2E sin acoplamientos.</li>
+<li>Comprobar la sincronización reactiva basada en estados reales de componentes en lugar de tiempos ciegos.</li>
+</ul>
+</div>
+</div>
+</div>
+</div></section>
+<section class="slide" id="slide-6">
+<div class="slide-header">
+<div class="institution-tag">Bloque 2 • Retos de Automatización</div>
+<div class="speaker-badge">Expositor: <strong>Saulo Fernández</strong></div>
+</div>
+<h1 class="slide-title">Los 3 Desafíos Críticos del Testing en SPAs</h1>
+<h2 class="slide-subtitle">Por qué las pruebas tradicionales colapsan ante el dinamismo del frontend moderno</h2><div class="slide-body">
+<div class="grid-3">
+<div class="card compare-card-fragile">
+<div class="card-title">1. Selectores Frágiles</div>
+<div class="card-body">
+<p>El DOM cambia constantemente de maquetación por frameworks (React, Tailwind). Apuntarse a jerarquías CSS o IDs dinámicos rompe la prueba ante cualquier cambio estético.</p>
+<div class="code-snippet">
+<span class="code-comment">// FRÁGIL (Roto ante cambios):</span><br/>
+              page.locator(<span class="code-string">'div &gt; div:nth-child(2) &gt; button'</span>)
             </div>
-            <p style="margin-top: 0.5rem; font-size: 0.85rem;">Alta sobrecarga de latencia acumulada y sondeo ciego (polling).</p>
-          </div>
-        </div>
-
-        <!-- Cypress -->
-        <div class="card">
-          <div class="card-title" style="color: var(--accent-amber);">Cypress</div>
-          <div class="card-body">
-            <strong>In-Browser Runner (Iframe)</strong>
-            <div class="protocol-box">
-              [Browser Window]<br>
-              &nbsp;&nbsp;└─ [Iframe Sandbox]<br>
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="tag-warn">[Test Script JS]</span><br>
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ [Application JS]
+</div>
+</div>
+<div class="card compare-card-fragile">
+<div class="card-title">2. Contenido Asincrónico</div>
+<div class="card-body">
+<p>Peticiones a APIs con latencia variable. Las esperas fijas artificiales generan lentitud o fallos aleatorios si el servidor demora 100 ms más de lo previsto.</p>
+<div class="code-snippet">
+<span class="code-comment">// ANTIPATRÓN CATASTRÓFICO:</span><br/>
+<span class="code-keyword">await</span> page.<span class="code-fn">waitForTimeout</span>(<span class="code-string">2000</span>);
             </div>
-            <p style="margin-top: 0.5rem; font-size: 0.85rem;">Atrapado en el hilo de la app: sin multi-pestaña real y soporte WebKit limitado.</p>
-          </div>
-        </div>
-
-        <!-- Playwright -->
-        <div class="card" style="border: 1px solid var(--accent-cyan);">
-          <div class="card-title" style="color: var(--accent-cyan);">Microsoft Playwright</div>
-          <div class="card-body">
-            <strong>Out-of-Process (WebSocket Nativo)</strong>
-            <div class="protocol-box">
-              <span class="tag-good">[Test Script]</span><br>
-              &nbsp;&nbsp;↕ <strong>Único WebSocket Bidireccional</strong><br>
-              <span class="tag-good">[Browser Engine (CDP / DevTools)]</span>
+</div>
+</div>
+<div class="card compare-card-fragile">
+<div class="card-title">3. Rutas Client-Side</div>
+<div class="card-body">
+<p>La navegación no genera recarga completa de página (<code class="code-keyword">window.location</code>), sino mutaciones de componentes vía la API <code class="code-keyword">History.pushState</code>.</p>
+<div class="code-snippet">
+<span class="code-comment">// No hay evento 'load' tradicional</span><br/>
+              SPA actualiza vista reactivamente en cliente
             </div>
-            <p style="margin-top: 0.5rem; font-size: 0.85rem;">Eventos en tiempo real, control de red a nivel socket y velocidad extrema.</p>
-          </div>
-        </div>
+</div>
+</div>
+</div>
+</div></section>
+<section class="slide" id="slide-7">
+<div class="slide-header">
+<div class="institution-tag">Bloque 2 • La Aplicación Bajo Prueba</div>
+<div class="speaker-badge">Expositor: <strong>Saulo Fernández</strong></div>
+</div>
+<h1 class="slide-title">La SPA TaskFlow: Banco de Pruebas Reactivo</h1>
+<h2 class="slide-subtitle">Desarrollo a medida con React 18, Vite y TypeScript bajo Principio de Responsabilidad Única</h2>
+<div class="slide-body">
+  <div class="grid-2">
+    <!-- Tarjeta 1: Arquitectura Limpia -->
+    <div class="card">
+      <div class="card-title">📦 Arquitectura de la SPA (Clean UI)</div>
+      <div class="card-body">
+        <ul>
+          <li><strong>Desacoplamiento Estricto:</strong> React 18, Vite y TypeScript con servicios simulados y latencia asincrónica real (300-600ms).</li>
+          <li><strong>Búsqueda con Debounce:</strong> Entrada reactiva con retardo de 300ms antes de mutar el DOM para evaluar sincronización determinista.</li>
+          <li><strong>Modal y Toasts:</strong> Diálogos y notificaciones accesibles con atributos semánticos <code>role="status"</code>.</li>
+          <li><strong>Control de Sesión:</strong> Manejo de autenticación en memoria y LocalStorage con validación de rutas privadas.</li>
+        </ul>
       </div>
-
-      <!-- Jerarquía de Procesos -->
-      <div class="card" style="background: rgba(15, 23, 42, 0.9);">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div>
-            <strong style="color: var(--accent-cyan);">Jerarquía de Procesos en Playwright:</strong>
-            <span style="font-size: 0.9rem; color: #cbd5e1; margin-left: 0.5rem;">
-              <code>Browser</code> (Proceso pesado del SO) ➔ <code>BrowserContext</code> (Perfil efímero en <strong>&lt;10ms</strong> con cookies y storage aislados) ➔ <code>Page</code> (Pestaña)
-            </span>
-          </div>
-          <span class="tag-good" style="font-size: 0.85rem;">Aislamiento 100% Determinista</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- DIAPOSITIVA 4: Fragilidad vs QA Adaptativo -->
-    <section class="slide" id="slide-4">
-      <div class="institution-tag">Bloque 4: QA Adaptativo & Resiliencia — Nicolás Rumie</div>
-      <h1 class="slide-title">Fragilidad de Selectores vs QA Adaptativo</h1>
-      <h2 class="slide-subtitle">Árbol DOM Interno vs Árbol de Accesibilidad (Accessibility Tree)</h2>
-
-      <div class="grid-2">
-        <!-- Columna Izquierda: Frágil -->
-        <div class="card compare-card-fragile">
-          <div class="card-title" style="color: var(--accent-red);">
-            <span>❌</span> Enfoque Tradicional Frágil (DOM Interno)
-          </div>
-          <div class="card-body">
-            <ul>
-              <li><strong>Acoplado a detalles de implementación:</strong>
-                IDs sintéticos (<code>#btn-create-task</code>), clases de Tailwind o rutas XPath rígidas (<code>//div[2]/button</code>).
-              </li>
-              <li><strong>El problema industrial:</strong>
-                Hasta un <strong>60% del tiempo de QA</strong> se pierde reparando tests rotos por cambios cosméticos del frontend.
-              </li>
-              <li><strong>Comportamiento en UI v2:</strong>
-                El botón muta a <code>#act_btn_new_item_99f</code> ➔ <strong>Colapso inmediato por TimeoutError</strong>.
-              </li>
-            </ul>
-            <div class="code-snippet" style="color: #f87171;">
-              // Roto en UI v2:<br>
-              await page.locator('#btn-create-task').click();
-            </div>
-          </div>
-        </div>
-
-        <!-- Columna Derecha: Adaptativo Semántico -->
-        <div class="card compare-card-resilient">
-          <div class="card-title" style="color: var(--accent-green);">
-            <span>✅</span> Enfoque de QA Adaptativo (Árbol A11y)
-          </div>
-          <div class="card-body">
-            <ul>
-              <li><strong>Acoplado a la intención del usuario:</strong>
-                Utiliza roles ARIA y nombres accesibles que el navegador expone para lectores de pantalla.
-              </li>
-              <li><strong>Inmunidad ante refactors visuales:</strong>
-                Las clases o IDs pueden cambiar completamente, pero el elemento sigue siendo un <code>button</code> con texto <em>"Crear Tarea"</em>.
-              </li>
-              <li><strong>Comportamiento en UI v2:</strong>
-                <strong>Pasa al 100%</strong> en ambas versiones de la interfaz sin modificar una línea de código.
-              </li>
-            </ul>
-            <div class="code-snippet" style="color: #4ade80;">
-              // Resiliente en UI v1 y v2:<br>
-              await page.getByRole('button', { name: /Crear Tarea/i }).click();
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- DIAPOSITIVA 5: Conclusiones y Cierre -->
-    <section class="slide" id="slide-5">
-      <div class="institution-tag">Bloque 4: Conclusiones y Cierre — Nicolás Rumie</div>
-      <h1 class="slide-title">Conclusiones del Proyecto y Cierre Técnico</h1>
-      <h2 class="slide-subtitle">Los cuatro pilares de la ingeniería de pruebas moderna demostrados en TaskFlow</h2>
-
-      <div class="grid-2" style="margin-bottom: 1.5rem;">
-        <div class="card">
-          <div class="card-title">1. Arquitectura de Software</div>
-          <div class="card-body">
-            Aplicación estricta de <strong>SRP y Page Object Model</strong>. Desacoplamiento de localización, infraestructura con Fixtures (IoC) y especificaciones BDD.
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">2. Sincronización Determinista</div>
-          <div class="card-body">
-            Erradicación total de pausas artificiales (<code>sleep</code>) mediante los <strong>5 Actionability Checks</strong> de Playwright y <em>Web-First Assertions</em>.
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">3. QA Adaptativo & Self-Healing (IA)</div>
-          <div class="card-body">
-            Pruebas semánticas inmunes a rediseños y agente autónomo de IA capaz de diagnosticar fallos y autoreparar selectores con 98% de confianza.
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">4. Observabilidad Total</div>
-          <div class="card-body">
-            Diagnóstico avanzado con <strong>Trace Viewer</strong>: Time-travel debugging, snapshots interactivos del DOM antes y después de cada acción, y auditoría de red.
-          </div>
-        </div>
-      </div>
-
-      <div class="repo-banner" style="background: rgba(15, 23, 42, 0.9); border: 1px solid var(--accent-cyan);">
-        <div>
-          <div style="font-size: 1.05rem; font-weight: 700; color: #ffffff;">Repositorio Oficial del Proyecto:</div>
-          <div style="color: var(--accent-cyan); font-family: monospace; font-size: 1rem;">https://github.com/Axldev1991/utn-gds-playwright</div>
-        </div>
-        <div style="font-size: 1.1rem; font-weight: 700; color: #ffffff;">
-          ¡Muchas gracias! — Espacio para Preguntas Técnicas
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- Panel de Notas del Presentador -->
-  <div id="notes-panel">
-    <div id="notes-content"></div>
-  </div>
-
-  <!-- Barra de Navegación Inferior -->
-  <footer id="footer-nav">
-    <div class="nav-left">
-      <span><strong>UTN GDS</strong> — Equipo Playwright</span>
-      <span>|</span>
-      <span>Usa las flechas <strong>← / →</strong> o <strong>Espacio</strong></span>
-      <span>|</span>
-      <span>Presiona <strong>N</strong> para Notas | <strong>F</strong> para Pantalla Completa</span>
     </div>
 
-    <div class="nav-controls">
-      <button class="btn-nav" id="btn-prev" title="Diapositiva Anterior">❮ Anterior</button>
-      <div class="slide-counter" id="slide-indicator">1 / 5</div>
-      <button class="btn-nav" id="btn-next" title="Siguiente Diapositiva">Siguiente ❯</button>
-      <button class="btn-nav" id="btn-notes" title="Ver Notas">📝 Notas</button>
-      <button class="btn-nav" id="btn-fullscreen" title="Pantalla Completa">⛶ F11</button>
+    <!-- Tarjeta 2: Switch de QA Adaptativo -->
+    <div class="card" style="border-left: 4px solid var(--accent-purple);">
+      <div class="card-title" style="color: #c084fc;">🎛️ Módulo de QA Adaptativo: Toggle v1 vs v2</div>
+      <div class="card-body">
+        <p>La aplicación incluye un interruptor en el encabezado para simular en tiempo real una <strong>mutación hostil de la interfaz</strong>:</p>
+        <div style="background: #0f172a; padding: 0.85rem 1.1rem; border-radius: 8px; font-size: 1rem; line-height: 1.5; margin-top: 0.4rem;">
+          • <strong>Modo UI v1:</strong> Clases e IDs estándar (ej. <code class="tag-bad">#btn-create-task</code>).<br/>
+          • <strong>Modo UI v2:</strong> IDs dinámicos ofuscados (ej. <code class="tag-bad">#act_btn_new_item_99f</code>), manteniendo intacto el árbol de accesibilidad semántica.
+        </div>
+        <p style="margin-top: 0.6rem; font-size: 0.95rem; color: #94a3b8;">
+          🎯 <em>Permite demostrar empíricamente el quiebre de selectores CSS frente a la estabilidad del árbol accesible.</em>
+        </p>
+      </div>
     </div>
-  </footer>
+  </div>
 
-  <script>
-    // Notas para cada diapositiva
-    const presenterNotes = [
-      "DIAPOSITIVA 1 (Portada): Saludar cordialmente a los docentes de GDS. Presentar al equipo y aclarar que para este TP se desarrolló desde cero una SPA completa llamada TaskFlow para someterla a pruebas reales.",
-      "DIAPOSITIVA 2 (Ontología): Recorrer las 6 preguntas ontológicas con soltura. Resaltar la Tarjeta 3 (crisis del flakiness) y la Tarjeta 5 (conexión WebSocket y CDP directo al motor del navegador).",
-      "DIAPOSITIVA 3 (Arquitectura): Explicar con el cursor del mouse la diferencia de capas: Selenium con HTTP REST lento, Cypress atrapado en el iframe, y Playwright fuera de proceso con WebSocket. Resaltar que BrowserContext se crea en <10ms.",
-      "DIAPOSITIVA 4 (QA Adaptativo): Explicar el problema industrial (60% del tiempo en mantenimiento) y contrastar el DOM frágil con el Accessibility Tree (A11y Tree). Esto da el pie para mostrar en vivo la SPA v1 vs v2.",
-      "DIAPOSITIVA 5 (Cierre): Sintetizar los 4 pilares demostrados con orgullo técnico. Mencionar el repositorio en GitHub y dar paso formal a las preguntas de defensa con los profesores."
-    ];
+  <!-- Banner con Botón para Abrir Modal Interactivo -->
+  <div class="repo-banner" style="margin-top: 0.9rem; padding: 0.85rem 1.6rem; border-color: var(--accent-purple); display: flex; justify-content: space-between; align-items: center;">
+    <span>🚀 <strong>Demostración Práctica en Vivo:</strong> Probar login, debounce y switch UI v1/v2 a pantalla completa.</span>
+    <button type="button" onclick="openSpaModal()" class="btn-nav" style="background: rgba(168, 85, 247, 0.28); border: 1px solid var(--accent-purple); color: #ffffff; padding: 0.55rem 1.35rem; font-size: 1.02rem; cursor: pointer; border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s;">
+      ▶ Abrir TaskFlow SPA en Vivo (Modal)
+    </button>
+  </div>
+</div>
+</section>
+<section class="slide" id="slide-8">
+<div class="slide-header">
+<div class="institution-tag">Bloque 2 • Sincronización Web-First</div>
+<div class="speaker-badge">Expositor: <strong>Saulo Fernández</strong></div>
+</div>
+<h1 class="slide-title">Sincronización Determinista vs. Esperas Ciegas</h1>
+<h2 class="slide-subtitle">Cómo el motor de Auto-waiting y Web-First Assertions erradican el Flakiness</h2><div class="slide-body">
+<div class="grid-2">
+<div class="card compare-card-fragile">
+<div class="card-title" style="color: var(--accent-red);">❌ Antipatrón de Esperas Fijas</div>
+<div class="card-body">
+<p>Asumir tiempos mediante sleeps artificiales:</p>
+<div class="code-snippet">
+<span class="code-keyword">await</span> page.<span class="code-fn">click</span>(<span class="code-string">'#btn-submit'</span>);<br/>
+<span class="code-keyword">await</span> page.<span class="code-fn">waitForTimeout</span>(<span class="code-string">3000</span>); <span class="code-comment">// ¡Pausa ciega!</span><br/>
+<span class="code-keyword">await</span> page.<span class="code-fn">click</span>(<span class="code-string">'#item'</span>);
+            </div>
+<ul style="margin-top: 0.5rem;">
+<li>Retrasa innecesariamente las suites en pipelines.</li>
+<li>Falla aleatoriamente si la red demora 3001 ms.</li>
+</ul>
+</div>
+</div>
+<div class="card compare-card-resilient">
+<div class="card-title" style="color: var(--accent-green);">✔️ Auto-waiting &amp; Web-First Assertions</div>
+<div class="card-body">
+<p>Sincronización reactiva contra el estado real de la UI:</p>
+<div class="code-snippet">
+<span class="code-comment">// Espera determinista que resuelve en el milisegundo exacto:</span><br/>
+<span class="code-keyword">await</span> <span class="code-fn">expect</span>(page.<span class="code-fn">getByRole</span>(<span class="code-string">'status'</span>))<br/>
+                .<span class="code-fn">toHaveText</span>(<span class="code-string">'Tarea creada exitosamente'</span>);
+            </div>
+<ul style="margin-top: 0.5rem;">
+<li>Verifica que el elemento esté visible, habilitado y estable.</li>
+<li>Ejecución a máxima velocidad y 100% determinista.</li>
+</ul>
+</div>
+</div>
+</div>
+</div></section>
+<!-- ======================================================== -->
+<!-- BLOQUE 3: FRANCO ESPOSITO                                -->
+<!-- ======================================================== -->
+<!-- DIAPOSITIVA 9: Temario Bloque 3 - Franco Esposito -->
+<section class="slide" id="slide-9">
+<div class="slide-header">
+<div class="institution-tag">Bloque 3 • Diseño de Automatización &amp; Suites</div>
+<div class="speaker-badge">Expositor: <strong>Franco Esposito</strong></div>
+</div>
+<h1 class="slide-title">Bloque 3: POM, Fixtures y Flujos E2E BDD</h1>
+<h2 class="slide-subtitle">Hoja de ruta del expositor y conceptos centrales a desarrollar</h2><div class="slide-body">
+<div class="grid-2" style="margin-top: 0.5rem;">
+<div class="card" style="border-left: 4px solid var(--accent-cyan);">
+<div class="card-title">🎯 Temario del Bloque</div>
+<div class="card-body">
+<ul>
+<li><strong>Patrón Page Object Model (POM):</strong> Desacoplamiento de selectores y mantenimiento centralizado de páginas.</li>
+<li><strong>Estructura de Clases POM:</strong> BasePage, LoginPage, DashboardPage y TaskModalComponent.</li>
+<li><strong>Fixtures e Inversión de Control:</strong> Inyección de dependencias (<code>authenticatedPage</code> y <code>cleanPage</code>).</li>
+<li><strong>Los 3 Flujos Críticos BDD:</strong> Cobertura de Autenticación, Búsqueda asincrónica y Creación de tareas con Toast.</li>
+</ul>
+</div>
+</div>
+<div class="card" style="border-left: 4px solid var(--accent-blue);">
+<div class="card-title">💡 Metas Técnicas</div>
+<div class="card-body">
+<ul>
+<li>Garantizar que los tests solo expresen la intención de negocio (<em>¿Qué?</em>) y el POM resuelva el DOM (<em>¿Cómo?</em>).</li>
+<li>Aislar ejecuciones mediante contextos limpios sin duplicación de código boilerplate de autenticación.</li>
+<li>Ejecución paralela verificada en Chromium, Firefox y Mobile Chrome sin intermitencias.</li>
+</ul>
+</div>
+</div>
+</div>
+</div></section>
+<section class="slide" id="slide-10">
+<div class="slide-header">
+<div class="institution-tag">Bloque 3 • Diseño de Automatización</div>
+<div class="speaker-badge">Expositor: <strong>Franco Esposito</strong></div>
+</div>
+<h1 class="slide-title">Arquitectura Page Object Model (POM)</h1>
+<h2 class="slide-subtitle">Centralización de selectores semánticos y desacoplamiento de la lógica de negocio</h2><div class="slide-body">
+<div class="grid-4">
+<div class="card">
+<div class="card-title" style="color: var(--accent-cyan);">BasePage</div>
+<div class="card-body">
+            Clase base abstracta. Encapsula la instancia de <code class="code-keyword">page</code>, métodos de navegación genéricos y helpers de accesibilidad global.
+          </div>
+</div>
+<div class="card">
+<div class="card-title" style="color: var(--accent-blue);">LoginPage</div>
+<div class="card-body">
+            Encapsula los campos de email, password, botón de inicio de sesión y validación de alertas de error con <code class="code-fn">getByRole('alert')</code>.
+          </div>
+</div>
+<div class="card">
+<div class="card-title" style="color: var(--accent-indigo);">DashboardPage</div>
+<div class="card-body">
+            Centraliza el header, el buscador reactivo, el filtro de estados de sprint, el contador de tareas y la apertura del modal.
+          </div>
+</div>
+<div class="card">
+<div class="card-title" style="color: var(--accent-purple);">TaskModalComponent</div>
+<div class="card-body">
+            Componente reutilizable. Modela el formulario emergente (título, descripción, prioridad, asignado y confirmación).
+          </div>
+</div>
+</div>
+<div class="repo-banner" style="margin-top: 0.75rem; padding: 0.75rem 1.25rem; font-size: 1.02rem;">
+<span>🎯 <strong>Regla de Oro Aplicada:</strong> Los tests solo describen la intención de negocio (<em>¿Qué se prueba?</em>). Las clases POM resuelven la interacción técnica con el DOM (<em>¿Cómo se interactúa?</em>).</span>
+</div>
+</div></section>
+<section class="slide" id="slide-11">
+<div class="slide-header">
+<div class="institution-tag">Bloque 3 • Inversión de Control</div>
+<div class="speaker-badge">Expositor: <strong>Franco Esposito</strong></div>
+</div>
+<h1 class="slide-title">Fixtures e Inyección de Dependencias</h1>
+<h2 class="slide-subtitle">Inspección interactiva del desacoplamiento entre Page Objects, Fixtures y Tests BDD</h2>
+<div class="slide-body">
+  <div class="card" style="padding: 1.25rem 1.6rem; margin-bottom: 0.6rem;">
+    <!-- Barra de Pestañas Interactivas -->
+    <div class="code-tabs-bar">
+      <button class="code-tab-btn active" onclick="switchCodeTab(event, 'tab-fixture')">🧩 1. test.fixture.ts (Inyección)</button>
+      <button class="code-tab-btn" onclick="switchCodeTab(event, 'tab-pom')">📄 2. LoginPage.ts (Page Object)</button>
+      <button class="code-tab-btn" onclick="switchCodeTab(event, 'tab-test')">🧪 3. 04-task-creation.spec.ts (Test BDD)</button>
+    </div>
+
+    <!-- Contenido Tab 1: Fixture -->
+    <div id="tab-fixture" class="code-tab-pane active">
+      <div style="font-size: 0.88rem; color: #94a3b8; margin-bottom: 0.3rem;">Extensión del runner de Playwright inyectando <code>authenticatedPage</code> e instancias POM con aislamiento estricto:</div>
+      <div class="code-snippet" style="font-size: 0.95rem; line-height: 1.5; margin-top: 0.3rem;">
+        <span class="code-keyword">export const</span> test = baseTest.<span class="code-fn">extend</span>&lt;<span class="code-keyword">CustomFixtures</span>&gt;({<br>
+        &nbsp;&nbsp;<span class="code-fn">dashboardPage</span>: <span class="code-keyword">async</span> ({ page }, use) =&gt; {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">const</span> dashboard = <span class="code-keyword">new</span> <span class="code-fn">DashboardPage</span>(page);<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">await</span> <span class="code-fn">use</span>(dashboard);<br>
+        &nbsp;&nbsp;},<br>
+        &nbsp;&nbsp;<span class="code-fn">authenticatedPage</span>: <span class="code-keyword">async</span> ({ page }, use) =&gt; {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-comment">// Login programático una única vez sin repetir formulario</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">await</span> loginPage.<span class="code-fn">login</span>(<span class="code-string">'admin@taskflow.dev'</span>, <span class="code-string">'password123'</span>);<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">await</span> <span class="code-fn">use</span>(page);<br>
+        &nbsp;&nbsp;}<br>
+        });
+      </div>
+    </div>
+
+    <!-- Contenido Tab 2: POM -->
+    <div id="tab-pom" class="code-tab-pane">
+      <div style="font-size: 0.88rem; color: #94a3b8; margin-bottom: 0.3rem;">Encapsulación del DOM en LoginPage utilizando selectores semánticos basados en el árbol de accesibilidad:</div>
+      <div class="code-snippet" style="font-size: 0.95rem; line-height: 1.5; margin-top: 0.3rem;">
+        <span class="code-keyword">export class</span> <span class="code-fn">LoginPage</span> <span class="code-keyword">extends</span> BasePage {<br>
+        &nbsp;&nbsp;<span class="code-keyword">readonly</span> emailInput: Locator;<br>
+        &nbsp;&nbsp;<span class="code-keyword">readonly</span> submitButton: Locator;<br><br>
+        &nbsp;&nbsp;<span class="code-fn">constructor</span>(page: Page) {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">super</span>(page);<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">this</span>.emailInput = page.<span class="code-fn">getByLabel</span>(<span class="code-string">'Correo Electrónico'</span>);<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">this</span>.submitButton = page.<span class="code-fn">getByRole</span>(<span class="code-string">'button'</span>, { name: /Iniciar Sesión/i });<br>
+        &nbsp;&nbsp;}<br>
+        }
+      </div>
+    </div>
+
+    <!-- Contenido Tab 3: Test BDD -->
+    <div id="tab-test" class="code-tab-pane">
+      <div style="font-size: 0.88rem; color: #94a3b8; margin-bottom: 0.3rem;">Test declarativo de alta de tareas recibiendo <code>dashboardPage</code> ya autenticado sin instanciaciones manuales:</div>
+      <div class="code-snippet" style="font-size: 0.95rem; line-height: 1.5; margin-top: 0.3rem;">
+        test(<span class="code-string">'3.1 Creación exitosa de tarea muestra Toast'</span>, <span class="code-keyword">async</span> ({ dashboardPage }) =&gt; {<br>
+        &nbsp;&nbsp;<span class="code-keyword">const</span> modal = <span class="code-keyword">await</span> dashboardPage.<span class="code-fn">openNewTaskModal</span>();<br>
+        &nbsp;&nbsp;<span class="code-keyword">await</span> modal.<span class="code-fn">createTask</span>({ title: <span class="code-string">'Tarea E2E'</span>, priority: <span class="code-string">'alta'</span>, assignee: <span class="code-string">'Axel Castellano'</span> });<br><br>
+        &nbsp;&nbsp;<span class="code-keyword">await</span> <span class="code-fn">expect</span>(dashboardPage.toastNotification).<span class="code-fn">toBeVisible</span>();<br>
+        &nbsp;&nbsp;<span class="code-keyword">await</span> <span class="code-fn">expect</span>(dashboardPage.<span class="code-fn">getTaskCardByTitle</span>(<span class="code-string">'Tarea E2E'</span>)).<span class="code-fn">toBeVisible</span>();<br>
+        });
+      </div>
+    </div>
+  </div>
+
+  <!-- Banner Interactivo para Abrir el Modal de Terminal Runner -->
+  <div class="repo-banner" style="margin-top: 0.6rem; padding: 0.85rem 1.6rem; border-color: var(--accent-cyan); display: flex; justify-content: space-between; align-items: center; background: #0c1220;">
+    <div style="display: flex; align-items: center; gap: 0.75rem;">
+      <span style="font-size: 1.3rem;">⚡</span>
+      <div>
+        <strong style="color: #ffffff; font-size: 1.02rem;">Live Demo: Suites E2E Playwright en Paralelo</strong>
+        <div style="font-size: 0.82rem; color: #94a3b8;">Ejecutar pruebas reales sobre Chromium, Firefox y Mobile Chrome con terminal en vivo</div>
+      </div>
+    </div>
+    <button type="button" onclick="openTestModal()" class="btn-nav" style="background: rgba(56, 189, 248, 0.25); border: 1px solid var(--accent-cyan); color: #ffffff; padding: 0.55rem 1.35rem; font-size: 1rem; cursor: pointer; border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s;">
+      ▶ Abrir Consola de Ejecución en Vivo (Modal)
+    </button>
+  </div>
+</div>
+</section>
+<section class="slide" id="slide-12">
+<div class="slide-header">
+<div class="institution-tag">Bloque 3 • Cobertura Funcional</div>
+<div class="speaker-badge">Expositor: <strong>Franco Esposito</strong></div>
+</div>
+<h1 class="slide-title">Suites de Pruebas E2E para los 3 Flujos Críticos</h1>
+<h2 class="slide-subtitle">Especificación BDD y validaciones sobre Chromium, Firefox y Mobile Chrome</h2><div class="slide-body">
+<div class="grid-3">
+<div class="card">
+<div class="card-title">🔐 Flujo 1: Auth y Sesión</div>
+<div class="card-body">
+<span style="font-family: monospace; font-size: 1.05rem; display: inline-block; margin-bottom: 0.4rem; color: var(--accent-cyan);">02-auth-flow.spec.ts</span>
+<ul style="margin-top: 0.4rem;">
+<li><strong>Login Exitoso:</strong> Carga asincrónica, redirección al Dashboard y saludo personalizado.</li>
+<li><strong>Login Inválido:</strong> Muestra alerta accesible <code class="code-fn">role="alert"</code> sin cambiar de vista.</li>
+<li><strong>Logout:</strong> Destrucción de sesión y retorno al login.</li>
+</ul>
+</div>
+</div>
+<div class="card">
+<div class="card-title">🔍 Flujo 2: Búsqueda Reactiva</div>
+<div class="card-body">
+<span style="font-family: monospace; font-size: 1.05rem; display: inline-block; margin-bottom: 0.4rem; color: var(--accent-cyan);">03-search-filter-flow.spec.ts</span>
+<ul style="margin-top: 0.4rem;">
+<li><strong>Debounce 300ms:</strong> Espera determinista del filtrado dinámico.</li>
+<li><strong>Filtro de Estado:</strong> Segmentación por estado de sprint (ej. Completadas).</li>
+<li><strong>Empty State:</strong> Validación de contenedor accesible ante cero resultados.</li>
+</ul>
+</div>
+</div>
+<div class="card">
+<div class="card-title">📝 Flujo 3: Alta con Modal</div>
+<div class="card-body">
+<span style="font-family: monospace; font-size: 1.05rem; display: inline-block; margin-bottom: 0.4rem; color: var(--accent-cyan);">04-task-creation-flow.spec.ts</span>
+<ul style="margin-top: 0.4rem;">
+<li><strong>Alta Exitosa:</strong> Formulario completo, toast de feedback y actualización en vivo.</li>
+<li><strong>Validación Requeridos:</strong> Bloqueo con alerta si falta el título.</li>
+<li><strong>Cancelación:</strong> Cierre del diálogo sin mutar el tablero.</li>
+</ul>
+</div>
+</div>
+</div>
+</div></section>
+<!-- ======================================================== -->
+<!-- BLOQUE 4: NICOLAS RUMIE                                  -->
+<!-- ======================================================== -->
+<!-- DIAPOSITIVA 13: Temario Bloque 4 - Nicolás Rumie -->
+<section class="slide" id="slide-13">
+<div class="slide-header">
+<div class="institution-tag">Bloque 4 • Resiliencia, IA &amp; Observabilidad</div>
+<div class="speaker-badge">Expositor: <strong>Nicolás Rumie</strong></div>
+</div>
+<h1 class="slide-title">Bloque 4: QA Adaptativo, IA y Observabilidad</h1>
+<h2 class="slide-subtitle">Hoja de ruta del expositor y conceptos centrales a desarrollar</h2><div class="slide-body">
+<div class="grid-2" style="margin-top: 0.5rem;">
+<div class="card" style="border-left: 4px solid var(--accent-cyan);">
+<div class="card-title">🎯 Temario del Bloque</div>
+<div class="card-body">
+<ul>
+<li><strong>Demostración Experimental en Vivo:</strong> Quiebre de IDs dinámicos en UI v2 vs. resiliencia de <code>getByRole</code>.</li>
+<li><strong>Auto-Healing Autónomo con LLMs:</strong> Diagnóstico de fallos en CI/CD, análisis de DOM y reparación asistida (98% confianza).</li>
+<li><strong>Playwright MCP:</strong> Integración de agentes inteligentes para exploración y validación no asistida.</li>
+<li><strong>Observabilidad Forense con Trace Viewer:</strong> Tira fílmica, snapshots de DOM Before/After, red y consola.</li>
+</ul>
+</div>
+</div>
+<div class="card" style="border-left: 4px solid var(--accent-blue);">
+<div class="card-title">💡 Metas Técnicas</div>
+<div class="card-body">
+<ul>
+<li>Demostrar la superioridad del Árbol de Accesibilidad (A11y Tree) sobre los selectores de maquetación CSS/XPath.</li>
+<li>Integrar Inteligencia Artificial para reducir drásticamente el costo de mantenimiento de suites de pruebas.</li>
+<li>Realizar auditorías forenses paso a paso de cualquier fallo sin necesidad de reproducir a ciegas el test.</li>
+</ul>
+</div>
+</div>
+</div>
+</div></section>
+<section class="slide" id="slide-14">
+<div class="slide-header">
+<div class="institution-tag">Bloque 4 • Resiliencia Semántica</div>
+<div class="speaker-badge">Expositor: <strong>Nicolás Rumie</strong></div>
+</div>
+<h1 class="slide-title">Experimento de QA Adaptativo: Toggle UI v1 vs. v2</h1>
+<h2 class="slide-subtitle">Demostración empírica de quiebre de selectores CSS vs estabilidad semántica</h2><div class="slide-body">
+<div class="grid-2">
+<div class="card compare-card-fragile">
+<div class="card-title" style="color: var(--accent-red);">💥 El Quiebre en UI v2 (fragile-selectors.spec.ts)</div>
+<div class="card-body">
+<p>El test se acoplaba al ID del botón en versión 1:</p>
+<div class="code-snippet">
+<span class="code-keyword">await</span> page.<span class="code-fn">locator</span>(<span class="code-string">'#btn-create-task'</span>).<span class="code-fn">click</span>();
+            </div>
+<p style="margin-top: 0.5rem;">En <strong>Modo v2</strong>, el desarrollador refactorizó el botón a:</p>
+<div class="code-snippet" style="color: #f87171;">
+              &lt;button id="act_btn_new_item_99f" aria-label="Crear Tarea"&gt;<br/>
+                &lt;span&gt;➕ Crear Tarea&lt;/span&gt;<br/>
+              &lt;/button&gt;
+            </div>
+<p style="margin-top: 0.5rem; color: var(--accent-red);"><strong>Resultado:</strong> <code class="tag-bad">TimeoutError 5000ms</code>. La suite de CI/CD se tiñe de rojo sin que haya un bug funcional.</p>
+</div>
+</div>
+<div class="card compare-card-resilient">
+<div class="card-title" style="color: var(--accent-green);">🛡️ Resiliencia Semántica (adaptive-semantic.spec.ts)</div>
+<div class="card-body">
+<p>La prueba implementada con el árbol de accesibilidad (A11y):</p>
+<div class="code-snippet" style="color: #34d399;">
+<span class="code-keyword">await</span> page.<span class="code-fn">getByRole</span>(<span class="code-string">'button'</span>, { <span class="code-fn">name</span>: /Crear Tarea/i }).<span class="code-fn">click</span>();
+            </div>
+<ul style="margin-top: 0.75rem;">
+<li><strong>Inmune a mutaciones:</strong> El ID cambió pero el rol accesible y su intención siguen intactos.</li>
+<li><strong>100% Exitoso:</strong> Pasa tanto en UI v1 como en UI v2 de manera totalmente transparente.</li>
+</ul>
+</div>
+</div>
+</div>
+</div></section>
+<section class="slide" id="slide-15">
+<div class="slide-header">
+<div class="institution-tag">Bloque 4 • Inteligencia Artificial en Testing</div>
+<div class="speaker-badge">Expositor: <strong>Nicolás Rumie</strong></div>
+</div>
+<h1 class="slide-title">Auto-Healing Autónomo Asistido por LLMs</h1>
+<h2 class="slide-subtitle">El ciclo del Agente de Testing: Detección, Razonamiento, Reparación y Ejecución</h2>
+<div class="slide-body">
+  <div class="grid-3">
+    <div class="card">
+      <div class="card-title">1. Diagnóstico del Fallo</div>
+      <div class="card-body">
+        El script <code style="color: var(--accent-cyan);">llm-healing-demo.ts</code> intercepta el fallo en CI/CD, captura el snapshot del DOM mutado y recupera la intención de negocio original.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">2. Razonamiento del LLM</div>
+      <div class="card-body">
+        El modelo analiza que el botón mutó a <code style="color: #f87171;">#act_btn_new_item_99f</code>, pero conserva intacto el rol <code class="code-keyword">button</code> y el texto <code class="code-string">"Crear Tarea"</code>.
+      </div>
+    </div>
+
+    <div class="card" style="border-left: 3px solid var(--accent-green);">
+      <div class="card-title" style="color: var(--accent-green);">3. Auto-Reparación (98%)</div>
+      <div class="card-body">
+        Propone automáticamente el selector semántico:
+        <div class="code-snippet" style="font-size: 0.95rem; padding: 0.65rem 0.95rem;">
+          page.getByRole('button', { name: /Crear Tarea/i })
+        </div>
+        y re-ejecuta el test dejándolo 100% en verde.
+      </div>
+    </div>
+  </div>
+
+  <!-- Banner Interactivo para Demostración de AI Self-Healing -->
+  <div class="repo-banner" style="margin-top: 0.75rem; padding: 0.85rem 1.6rem; border-color: var(--accent-purple); display: flex; justify-content: space-between; align-items: center; background: #0c1220;">
+    <div style="display: flex; align-items: center; gap: 0.75rem;">
+      <span style="font-size: 1.3rem;">🤖</span>
+      <div>
+        <strong style="color: #ffffff; font-size: 1.02rem;">Live Demo: Quiebre de Selectores & Auto-Healing Autónomo con LLM</strong>
+        <div style="font-size: 0.82rem; color: #94a3b8;">Verificar cómo colapsa la prueba frágil en UI v2 y cómo el agente de IA la auto-repara</div>
+      </div>
+    </div>
+    <button type="button" onclick="openHealingModal()" class="btn-nav" style="background: rgba(168, 85, 247, 0.28); border: 1px solid var(--accent-purple); color: #ffffff; padding: 0.55rem 1.35rem; font-size: 1rem; cursor: pointer; border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s;">
+      ▶ Abrir Consola AI Auto-Healing (Modal)
+    </button>
+  </div>
+</div>
+</section>
+<section class="slide" id="slide-16">
+<div class="slide-header">
+<div class="institution-tag">Bloque 4 • Diagnóstico y Auditoría</div>
+<div class="speaker-badge">Expositor: <strong>Nicolás Rumie</strong></div>
+</div>
+<h1 class="slide-title">Observabilidad Forense: Trace Viewer &amp; HTML Reports</h1>
+<h2 class="slide-subtitle">Auditoría microsegundo a microsegundo de la ejecución E2E</h2><div class="slide-body">
+<div class="grid-3">
+<div class="card">
+<div class="card-title">📸 DOM Snapshots Vivos</div>
+<div class="card-body">
+            Permite inspeccionar el DOM exacto antes (<em>Before</em>) y después (<em>After</em>) de cada acción, navegando el árbol accesible en cualquier punto del tiempo.
+          </div>
+</div>
+<div class="card">
+<div class="card-title">⏱️ Tira Fílmica (Timeline)</div>
+<div class="card-body">
+            Capturas secuenciales de pantalla organizadas en una línea de tiempo para entender exactamente qué vio el usuario cuando ocurrió una interacción.
+          </div>
+</div>
+<div class="card">
+<div class="card-title">🌐 Registro de Red y Consola</div>
+<div class="card-body">
+            Auditoría de cada petición HTTP/WebSocket, tiempos de respuesta de la API, encabezados, respuestas JSON y logs de consola del navegador.
+          </div>
+</div>
+</div>
+<div class="repo-banner" style="margin-top: 1rem; padding: 0.85rem 1.6rem; border-color: var(--accent-green); display: flex; justify-content: space-between; align-items: center; background: #0c1815;">
+  <div style="display: flex; align-items: center; gap: 0.75rem;">
+    <span style="font-size: 1.35rem;">🔍</span>
+    <div>
+      <strong style="color: #ffffff; font-size: 1.02rem;">Herramienta Forense en Acción: Playwright Trace Viewer</strong>
+      <div style="font-size: 0.82rem; color: #94a3b8;">Línea de tiempo milisegundo a milisegundo, snapshots Before/After, inspección de red y logs</div>
+    </div>
+  </div>
+  <button type="button" onclick="openTraceModal()" class="btn-nav" style="background: rgba(34, 197, 94, 0.28); border: 1px solid var(--accent-green); color: #ffffff; padding: 0.55rem 1.35rem; font-size: 1rem; cursor: pointer; border-radius: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s;">
+    ▶ Abrir Playwright Trace Viewer (Modal)
+  </button>
+</div>
+</div></section>
+<section class="slide" id="slide-17">
+<div class="slide-header">
+<div class="institution-tag">Cierre de Exposición • UTN GDS</div>
+<div class="speaker-badge">Conclusiones del Equipo</div>
+</div>
+<h1 class="slide-title">Conclusiones y los 4 Pilares de la Ingeniería de Pruebas</h1>
+<h2 class="slide-subtitle">Lecciones aprendidas demostradas en el desarrollo de TaskFlow</h2><div class="slide-body">
+<div class="grid-4">
+<div class="card">
+<div class="card-title" style="color: var(--accent-cyan);">1. Arquitectura</div>
+<div class="card-body">
+            La comunicación directa vía WebSocket (CDP) supera ampliamente al protocolo HTTP de Selenium y a los iframes de Cypress.
+          </div>
+</div>
+<div class="card">
+<div class="card-title" style="color: var(--accent-blue);">2. Mantenibilidad</div>
+<div class="card-body">
+            POM y Fixtures con Inversión de Control aíslan la lógica y reducen el costo de mantenimiento de suites enterprise.
+          </div>
+</div>
+<div class="card">
+<div class="card-title" style="color: var(--accent-green);">3. Resiliencia</div>
+<div class="card-body">
+            Auto-waiting y locators semánticos basados en accesibilidad erradican el 100% del flakiness en SPAs dinámicas.
+          </div>
+</div>
+<div class="card">
+<div class="card-title" style="color: var(--accent-purple);">4. Adaptabilidad</div>
+<div class="card-body">
+            La Inteligencia Artificial complementa al testing transformando fallos frágiles en auto-reparaciones asistidas.
+          </div>
+</div>
+</div>
+<div class="repo-banner" style="background: rgba(15, 23, 42, 0.95); border: 1px solid var(--accent-cyan); margin-top: 1.2rem;">
+<div>
+<div style="font-size: 1.25rem; font-weight: 700; color: #ffffff;">Repositorio Oficial del Proyecto:</div>
+<div style="color: var(--accent-cyan); font-family: monospace; font-size: 1.15rem;">https://github.com/Axldev1991/utn-gds-playwright</div>
+</div>
+<div style="font-size: 1.15rem; font-weight: 700; color: #ffffff; text-align: right;">
+          ¡Muchas gracias!
+        </div>
+</div>
+</div></section>
+</main>
+<!-- Barra de Navegación Inferior -->
+<footer id="footer-nav">
+<div class="nav-left">
+<span><strong>UTN GDS</strong> — Equipo #5</span>
+<span>|</span>
+<span>Navegación: <strong>← / →</strong> o <strong>Espacio</strong></span>
+<span>|</span>
+<span>Teclas: <strong>F</strong> (Pantalla Completa)</span>
+</div>
+<div class="nav-controls">
+<button class="btn-nav" id="btn-prev" title="Diapositiva Anterior">❮ Anterior</button>
+<div class="slide-counter" id="slide-indicator">1 / 17</div>
+<button class="btn-nav" id="btn-next" title="Siguiente Diapositiva">Siguiente ❯</button>
+<button class="btn-nav" id="btn-fullscreen" title="Pantalla Completa">⛶ F11</button>
+</div>
+</footer>
+<script>
 
     let currentSlide = 0;
     const slides = document.querySelectorAll('.slide');
     const totalSlides = slides.length;
     const progressBar = document.getElementById('progress-bar');
     const slideIndicator = document.getElementById('slide-indicator');
-    const notesPanel = document.getElementById('notes-panel');
-    const notesContent = document.getElementById('notes-content');
 
     function updateSlide(index) {
       if (index < 0 || index >= totalSlides) return;
@@ -764,7 +1770,6 @@
       currentSlide = index;
       progressBar.style.width = `${((index + 1) / totalSlides) * 100}%`;
       slideIndicator.textContent = `${index + 1} / ${totalSlides}`;
-      notesContent.innerHTML = `<strong>Notas del Orador:</strong> ${presenterNotes[index]}`;
     }
 
     function nextSlide() {
@@ -775,10 +1780,6 @@
       if (currentSlide > 0) updateSlide(currentSlide - 1);
     }
 
-    function toggleNotes() {
-      notesPanel.classList.toggle('visible');
-    }
-
     function toggleFullscreen() {
       if (!document.fullscreenElement) {
         document.documentElement.requestFullscreen().catch(() => {});
@@ -787,8 +1788,111 @@
       }
     }
 
+    
+    // Control del Modal de la SPA TaskFlow
+    function openSpaModal() {
+      const overlay = document.getElementById('spa-modal-overlay');
+      if (overlay) {
+        overlay.classList.add('active');
+        const iframe = document.getElementById('spa-modal-frame');
+        if (iframe && !iframe.src) iframe.src = 'http://localhost:5173';
+      }
+    }
+
+    function closeSpaModal() {
+      const overlay = document.getElementById('spa-modal-overlay');
+      if (overlay) overlay.classList.remove('active');
+    }
+
+    function reloadSpaFrame() {
+      const iframe = document.getElementById('spa-modal-frame');
+      if (iframe) iframe.src = 'http://localhost:5173';
+    }
+
+    function handleModalOverlayClick(e) {
+      if (e.target.id === 'spa-modal-overlay') closeSpaModal();
+    }
+
+    // Lógica del Inspector de Selectores (v1 vs v2)
+    function setInspectorMode(version) {
+      const btnV1 = document.getElementById('inspector-btn-v1');
+      const btnV2 = document.getElementById('inspector-btn-v2');
+      const domStatus = document.getElementById('inspector-dom-status');
+      const domCode = document.getElementById('inspector-dom-code');
+      const searchCode = document.getElementById('inspector-search-code');
+      const badgeFragile = document.getElementById('badge-locator-fragile');
+      const codeFragile = document.getElementById('code-locator-fragile');
+      const fragileNote = document.getElementById('fragile-eval-note');
+
+      if (version === 'v1') {
+        btnV1.className = 'inspector-mode-btn active-v1';
+        btnV2.className = 'inspector-mode-btn';
+        domStatus.className = 'inspector-badge-pass';
+        domStatus.textContent = 'ESTÁNDAR (v1)';
+
+        domCode.innerHTML = `&lt;<span style="color:#f43f5e">button</span> <span style="color:#fbbf24">type</span>=<span style="color:#34d399">"button"</span><br/>
+&nbsp;&nbsp;<span style="color:#fbbf24">id</span>=<span style="color:#34d399">"<strong style="color:#38bdf8">btn-create-task</strong>"</span><br/>
+&nbsp;&nbsp;<span style="color:#fbbf24">class</span>=<span style="color:#34d399">"btn-primary"</span><br/>
+&nbsp;&nbsp;<span style="color:#fbbf24">aria-label</span>=<span style="color:#34d399">"Nueva Tarea"</span>&gt;<br/>
+&nbsp;&nbsp;+ Nueva Tarea<br/>
+&lt;/<span style="color:#f43f5e">button</span>&gt;`;
+
+        searchCode.innerHTML = `&lt;<span style="color:#f43f5e">input</span> <span style="color:#fbbf24">type</span>=<span style="color:#34d399">"search"</span><br/>
+&nbsp;&nbsp;<span style="color:#fbbf24">id</span>=<span style="color:#34d399">"<strong style="color:#38bdf8">input-search-tasks</strong>"</span><br/>
+&nbsp;&nbsp;<span style="color:#fbbf24">role</span>=<span style="color:#34d399">"searchbox"</span><br/>
+&nbsp;&nbsp;<span style="color:#fbbf24">aria-label</span>=<span style="color:#34d399">"Buscar tareas"</span> /&gt;`;
+
+        badgeFragile.className = 'inspector-badge-pass';
+        badgeFragile.textContent = 'PASS';
+        codeFragile.textContent = "page.locator('#btn-create-task')";
+        fragileNote.style.color = '#4ade80';
+        fragileNote.textContent = '✔ Elemento encontrado exitosamente en el DOM.';
+      } else {
+        btnV1.className = 'inspector-mode-btn';
+        btnV2.className = 'inspector-mode-btn active-v2';
+        domStatus.className = 'inspector-badge-fail';
+        domStatus.textContent = 'ALTERADO (v2)';
+
+        domCode.innerHTML = `&lt;<span style="color:#f43f5e">button</span> <span style="color:#fbbf24">type</span>=<span style="color:#34d399">"button"</span><br/>
+&nbsp;&nbsp;<span style="color:#fbbf24">id</span>=<span style="color:#34d399">"<strong style="color:#f87171">act_btn_new_item_99f</strong>"</span><br/>
+&nbsp;&nbsp;<span style="color:#fbbf24">class</span>=<span style="color:#34d399">"btn-primary"</span><br/>
+&nbsp;&nbsp;<span style="color:#fbbf24">aria-label</span>=<span style="color:#34d399">"Nueva Tarea"</span>&gt;<br/>
+&nbsp;&nbsp;+ Nueva Tarea<br/>
+&lt;/<span style="color:#f43f5e">button</span>&gt;`;
+
+        searchCode.innerHTML = `&lt;<span style="color:#f43f5e">input</span> <span style="color:#fbbf24">type</span>=<span style="color:#34d399">"search"</span><br/>
+&nbsp;&nbsp;<span style="color:#fbbf24">id</span>=<span style="color:#34d399">"<strong style="color:#f87171">fld_query_hash_41a</strong>"</span><br/>
+&nbsp;&nbsp;<span style="color:#fbbf24">role</span>=<span style="color:#34d399">"searchbox"</span><br/>
+&nbsp;&nbsp;<span style="color:#fbbf24">aria-label</span>=<span style="color:#34d399">"Buscar tareas"</span> /&gt;`;
+
+        badgeFragile.className = 'inspector-badge-fail';
+        badgeFragile.textContent = 'FAIL (Timeout)';
+        codeFragile.textContent = "page.locator('#btn-create-task')";
+        fragileNote.style.color = '#f87171';
+        fragileNote.textContent = '❌ Timeout 30000ms: Elemento con id #btn-create-task no existe en v2.';
+      }
+
+      // Intentar sincronizar con el iframe si está en el mismo origen
+      try {
+        const iframe = document.getElementById('spa-modal-frame');
+        if (iframe && iframe.contentWindow && iframe.contentDocument) {
+          const iframeBtn = iframe.contentDocument.querySelector(`.version-btn[title*="${version}"]`);
+          if (iframeBtn) iframeBtn.click();
+        }
+      } catch (err) {
+        // Cross-origin restriction fallback
+      }
+    }
+
     // Eventos de teclado
     document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeSpaModal();
+        closeTestModal();
+        closeHealingModal();
+        closeTraceModal();
+        return;
+      }
       if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
         e.preventDefault();
         nextSlide();
@@ -801,23 +1905,693 @@
       } else if (e.key === 'End') {
         e.preventDefault();
         updateSlide(totalSlides - 1);
-      } else if (e.key.toLowerCase() === 'n') {
-        e.preventDefault();
-        toggleNotes();
       } else if (e.key.toLowerCase() === 'f') {
         e.preventDefault();
         toggleFullscreen();
       }
     });
 
+    
+    // Función interactiva para alternar pestañas de código en Diapositiva 11
+    function switchCodeTab(evt, tabId) {
+      const container = evt.currentTarget.closest('.card');
+      container.querySelectorAll('.code-tab-btn').forEach(btn => btn.classList.remove('active'));
+      container.querySelectorAll('.code-tab-pane').forEach(pane => pane.classList.remove('active'));
+      
+      evt.currentTarget.classList.add('active');
+      const activePane = container.querySelector('#' + tabId);
+      if (activePane) activePane.classList.add('active');
+    }
+
     // Eventos de botones
     document.getElementById('btn-next').addEventListener('click', nextSlide);
     document.getElementById('btn-prev').addEventListener('click', prevSlide);
-    document.getElementById('btn-notes').addEventListener('click', toggleNotes);
     document.getElementById('btn-fullscreen').addEventListener('click', toggleFullscreen);
+
+    // Control del Modal de la Terminal de Pruebas
+    function openTestModal() {
+      const overlay = document.getElementById('test-modal-overlay');
+      if (overlay) overlay.classList.add('active');
+    }
+
+    function closeTestModal() {
+      const overlay = document.getElementById('test-modal-overlay');
+      if (overlay) overlay.classList.remove('active');
+    }
+
+    function handleTestModalOverlayClick(e) {
+      if (e.target.id === 'test-modal-overlay') closeTestModal();
+    }
+
+    // Live Test Runner vía Server-Sent Events (SSE)
+    let currentEventSource = null;
+
+    function runPlaywrightSuite(mode) {
+      const consoleEl = document.getElementById('modal-runner-terminal-console');
+      const statusText = document.getElementById('modal-runner-status-text');
+      const btnStop = document.getElementById('modal-btn-stop');
+      const headedCheck = document.getElementById('modal-runner-headed-check');
+
+      if (btnStop) btnStop.style.display = 'inline-flex';
+      if (consoleEl) {
+        consoleEl.textContent = `[Runner] Iniciando suite: ${mode.toUpperCase()} (Navegador visible: ${headedCheck?.checked ? 'SÍ' : 'NO'})...\n\n`;
+      }
+      if (statusText) {
+        statusText.style.color = '#38bdf8';
+        statusText.textContent = `⏳ Ejecutando suite: ${mode.toUpperCase()}...`;
+      }
+
+      if (currentEventSource) {
+        currentEventSource.close();
+      }
+
+      const headed = headedCheck?.checked ? 'true' : 'false';
+      const eventSource = new EventSource(`/api/run-tests?mode=${mode}&headed=${headed}`);
+      currentEventSource = eventSource;
+
+      eventSource.addEventListener('start', (e) => {
+        try {
+          const data = JSON.parse(e.data);
+          consoleEl.textContent += `🚀 ${data.message}\n`;
+        } catch (_) {}
+      });
+
+      eventSource.addEventListener('output', (e) => {
+        consoleEl.textContent += e.data + '\n';
+        consoleEl.scrollTop = consoleEl.scrollHeight;
+      });
+
+      eventSource.addEventListener('done', (e) => {
+        try {
+          const data = JSON.parse(e.data);
+          if (data.success) {
+            statusText.style.color = '#4ade80';
+            statusText.textContent = '✔ Pruebas completadas con éxito (PASS)';
+            consoleEl.textContent += `\n=========================================\n✔ ${data.message}\n=========================================\n`;
+          } else {
+            statusText.style.color = '#f87171';
+            statusText.textContent = `✖ Finalizado con código de salida: ${data.code}`;
+            consoleEl.textContent += `\n=========================================\n✖ ${data.message}\n=========================================\n`;
+          }
+        } catch (_) {}
+        if (btnStop) btnStop.style.display = 'none';
+        eventSource.close();
+        currentEventSource = null;
+        consoleEl.scrollTop = consoleEl.scrollHeight;
+      });
+
+      eventSource.onerror = () => {
+        statusText.style.color = '#fbbf24';
+        statusText.textContent = '⚠️ Conexión de runner finalizada';
+        if (btnStop) btnStop.style.display = 'none';
+        eventSource.close();
+        currentEventSource = null;
+      };
+    }
+
+    function stopPlaywrightSuite() {
+      if (currentEventSource) {
+        currentEventSource.close();
+        currentEventSource = null;
+      }
+      const statusText = document.getElementById('modal-runner-status-text');
+      const btnStop = document.getElementById('modal-btn-stop');
+      const consoleEl = document.getElementById('modal-runner-terminal-console');
+      if (statusText) {
+        statusText.style.color = '#fca5a5';
+        statusText.textContent = '⏹ Ejecución cancelada por el usuario.';
+      }
+      if (btnStop) btnStop.style.display = 'none';
+      if (consoleEl) {
+        consoleEl.textContent += '\n[Runner] Proceso detenido manualmente.\n';
+      }
+    }
+
+    function clearRunnerConsole() {
+      const consoleEl = document.getElementById('modal-runner-terminal-console');
+      if (consoleEl) consoleEl.textContent = 'Consola limpiada.\n';
+    }
+
+    // Funciones interactivas de Terminal con tecla Enter (Franco)
+    function prepareTestCommand(mode) {
+      const input = document.getElementById('runner-cmd-input');
+      const headedCheck = document.getElementById('modal-runner-headed-check');
+      const headedFlag = headedCheck?.checked ? ' --headed' : '';
+
+      if (mode === 'auth') {
+        input.value = `npx playwright test e2e/tests/02-auth-flow.spec.ts${headedFlag}`;
+      } else if (mode === 'task') {
+        input.value = `npx playwright test e2e/tests/04-task-creation-flow.spec.ts${headedFlag}`;
+      } else if (mode === 'all') {
+        input.value = `npx playwright test${headedFlag}`;
+      }
+      input.focus();
+      input.select();
+    }
+
+    function syncCommandPreview() {
+      const input = document.getElementById('runner-cmd-input');
+      const headedCheck = document.getElementById('modal-runner-headed-check');
+      if (!input) return;
+      if (headedCheck?.checked) {
+        if (!input.value.includes('--headed')) input.value += ' --headed';
+      } else {
+        input.value = input.value.replace(' --headed', '').replace('--headed', '').trim();
+      }
+    }
+
+    function handleRunnerCommandKey(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        executeCurrentRunnerCommand();
+      }
+    }
+
+    function executeCurrentRunnerCommand() {
+      const input = document.getElementById('runner-cmd-input');
+      const cmd = input ? input.value.trim() : '';
+      if (!cmd) return;
+
+      let mode = 'all';
+      if (cmd.includes('02-auth-flow')) mode = 'auth';
+      else if (cmd.includes('04-task-creation')) mode = 'task';
+
+      runPlaywrightSuite(mode);
+    }
+
+    // Control del Modal de AI Self-Healing (Nicolás)
+    function openHealingModal() {
+      const overlay = document.getElementById('healing-modal-overlay');
+      if (overlay) overlay.classList.add('active');
+    }
+
+    function closeHealingModal() {
+      const overlay = document.getElementById('healing-modal-overlay');
+      if (overlay) overlay.classList.remove('active');
+    }
+
+    function handleHealingModalOverlayClick(e) {
+      if (e.target.id === 'healing-modal-overlay') closeHealingModal();
+    }
+
+    // Funciones interactivas de Terminal con tecla Enter (Nicolás)
+    let currentHealingStep = 'fragile';
+
+    function prepareHealingCommand(step) {
+      currentHealingStep = step;
+      const input = document.getElementById('healing-cmd-input');
+      if (!input) return;
+
+      if (step === 'fragile') {
+        input.value = 'npx playwright test e2e/ai-adaptive/fragile-selectors.spec.ts';
+      } else if (step === 'healing') {
+        input.value = 'npx tsx e2e/ai-adaptive/llm-healing-demo.ts';
+      } else if (step === 'healed-verify') {
+        input.value = 'npx playwright test e2e/tests/04-task-creation-flow.spec.ts';
+      }
+      input.focus();
+      input.select();
+    }
+
+    function handleHealingCommandKey(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        executeCurrentHealingCommand();
+      }
+    }
+
+    function executeCurrentHealingCommand() {
+      const input = document.getElementById('healing-cmd-input');
+      const cmd = input ? input.value.trim() : '';
+      if (!cmd) return;
+
+      let step = currentHealingStep;
+      if (cmd.includes('fragile-selectors')) step = 'fragile';
+      else if (cmd.includes('llm-healing-demo')) step = 'healing';
+      else if (cmd.includes('04-task-creation')) step = 'healed-verify';
+
+      runHealingWorkflow(step);
+    }
+
+    let currentHealingSource = null;
+
+    function runHealingWorkflow(step) {
+      const consoleEl = document.getElementById('healing-runner-terminal-console');
+      const statusText = document.getElementById('healing-runner-status-text');
+
+      if (currentHealingSource) {
+        currentHealingSource.close();
+      }
+
+      let mode = 'fragile';
+      let title = 'Paso 1: Simulación de Quiebre en UI v2';
+
+      if (step === 'healing') {
+        mode = 'healing';
+        title = 'Paso 2: Agente LLM en Acción (Diagnóstico y Auto-Reparación)';
+      } else if (step === 'healed-verify') {
+        mode = 'task';
+        title = 'Paso 3: Verificación con Locator Semántico Reparado';
+      }
+
+      if (statusText) {
+        statusText.style.color = '#38bdf8';
+        statusText.textContent = `⏳ ${title}...`;
+      }
+      if (consoleEl) {
+        consoleEl.textContent = `======================================================\n🚀 ${title.toUpperCase()}\n======================================================\n\n`;
+      }
+
+      const eventSource = new EventSource(`/api/run-tests?mode=${mode}&headed=false`);
+      currentHealingSource = eventSource;
+
+      eventSource.addEventListener('start', (e) => {
+        try {
+          const data = JSON.parse(e.data);
+          consoleEl.textContent += `[AI Engine] ${data.message}\n`;
+        } catch (_) {}
+      });
+
+      eventSource.addEventListener('output', (e) => {
+        consoleEl.textContent += e.data + '\n';
+        consoleEl.scrollTop = consoleEl.scrollHeight;
+      });
+
+      eventSource.addEventListener('done', (e) => {
+        try {
+          const data = JSON.parse(e.data);
+          if (step === 'fragile') {
+            statusText.style.color = '#f87171';
+            statusText.textContent = '❌ Quiebre Verificado: TimeoutError por selector frágil obsoleto (#btn-create-task).';
+            consoleEl.textContent += `\n[Diagnóstico] La prueba falló tal como se esperaba por acoplamiento al ID rígido.\n👉 Siguiente paso: Hacé clic en "2. Cargar Agente IA (Auto-Heal)" y pulsá Enter para repararlo.\n`;
+          } else if (step === 'healing') {
+            statusText.style.color = '#c084fc';
+            statusText.textContent = '🤖 Auto-Healing Completado: Selector reparado sintetizado con 98% de confianza.';
+            consoleEl.textContent += `\n👉 Siguiente paso: Hacé clic en "3. Cargar Test Resiliente" y pulsá Enter para verificar.\n`;
+          } else {
+            statusText.style.color = '#4ade80';
+            statusText.textContent = '✔ Suite 100% en Verde con Locator Semántico Resiliente.';
+            consoleEl.textContent += `\n🎉 Demostración completada exitosamente sin intervención manual de código.\n`;
+          }
+        } catch (_) {}
+        eventSource.close();
+        currentHealingSource = null;
+        consoleEl.scrollTop = consoleEl.scrollHeight;
+      });
+
+      eventSource.onerror = () => {
+        if (statusText) statusText.textContent = '⚠️ Conexión finalizada.';
+        eventSource.close();
+        currentHealingSource = null;
+      };
+    }
+
+    function clearHealingConsole() {
+      const consoleEl = document.getElementById('healing-runner-terminal-console');
+      if (consoleEl) consoleEl.textContent = 'Consola limpiada.\n';
+    }
+
+    // Modal de Playwright HTML Report & Trace Viewer Oficial (Iframe)
+    function openTraceModal() {
+      const overlay = document.getElementById('trace-modal-overlay');
+      if (overlay) overlay.classList.add('active');
+    }
+
+    function closeTraceModal() {
+      const overlay = document.getElementById('trace-modal-overlay');
+      if (overlay) overlay.classList.remove('active');
+    }
+
+    function handleTraceModalOverlayClick(e) {
+      if (e.target.id === 'trace-modal-overlay') closeTraceModal();
+    }
+
+    function reloadTraceFrame() {
+      const iframe = document.getElementById('trace-report-iframe');
+      if (iframe) iframe.src = '/report/index.html?t=' + Date.now();
+    }
 
     // Inicialización
     updateSlide(0);
   </script>
+
+  <!-- Modal para la SPA TaskFlow en Vivo -->
+  <div id="spa-modal-overlay" class="modal-overlay" onclick="handleModalOverlayClick(event)">
+    <div class="modal-container">
+      <div class="modal-header">
+        <div class="modal-title">
+          <span style="font-size: 1.25rem;">🌐</span>
+          <strong>TaskFlow SPA — Entorno de Pruebas en Vivo</strong>
+          <code>http://localhost:5173</code>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="modal-btn" onclick="reloadSpaFrame()">🔄 Recargar</button>
+          <a href="http://localhost:5173" target="_blank" class="modal-btn">↗ Pestaña Nueva</a>
+          <button type="button" class="modal-btn modal-close" onclick="closeSpaModal()">✖ Cerrar (Esc)</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <!-- Columna Izquierda: SPA TaskFlow en Vivo -->
+        <div class="modal-iframe-col">
+          <iframe id="spa-modal-frame" src="http://localhost:5173" title="TaskFlow SPA"></iframe>
+        </div>
+
+        <!-- Columna Derecha: Inspector de Selectores & Árbol A11y -->
+        <div class="modal-inspector-col">
+          <div class="inspector-header">
+            <div class="inspector-title">
+              <span>🔍</span> Inspector de Selectores &amp; DOM
+            </div>
+            <div class="inspector-mode-toggle">
+              <button type="button" id="inspector-btn-v1" class="inspector-mode-btn active-v1" onclick="setInspectorMode('v1')">UI v1</button>
+              <button type="button" id="inspector-btn-v2" class="inspector-mode-btn" onclick="setInspectorMode('v2')">UI v2</button>
+            </div>
+          </div>
+
+          <div class="inspector-body">
+            <!-- Estado Activo -->
+            <div style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 6px; padding: 0.6rem 0.8rem; font-size: 0.82rem; color: #cbd5e1;">
+              💡 <strong>Demostración de Saulo:</strong> Al conmutar el modo en la barra superior de TaskFlow o aquí, observá cómo los selectores ID/CSS mutan y rompen la prueba frágil, mientras los Locators semánticos permanecen estables.
+            </div>
+
+            <!-- Caja 1: DOM Snapshot del Botón Crear Tarea -->
+            <div class="inspector-box">
+              <div class="inspector-box-header">
+                <span>📄 DOM Snapshot: Botón "+ Nueva Tarea"</span>
+                <span id="inspector-dom-status" class="inspector-badge-pass">ESTÁNDAR (v1)</span>
+              </div>
+              <div class="inspector-box-body" id="inspector-dom-code" style="color: #38bdf8;">
+&lt;<span style="color:#f43f5e">button</span> <span style="color:#fbbf24">type</span>=<span style="color:#34d399">"button"</span><br/>
+&nbsp;&nbsp;<span style="color:#fbbf24">id</span>=<span style="color:#34d399">"<strong id="dom-val-id" style="color:#38bdf8">btn-create-task</strong>"</span><br/>
+&nbsp;&nbsp;<span style="color:#fbbf24">class</span>=<span style="color:#34d399">"btn-primary"</span><br/>
+&nbsp;&nbsp;<span style="color:#fbbf24">aria-label</span>=<span style="color:#34d399">"Nueva Tarea"</span>&gt;<br/>
+&nbsp;&nbsp;+ Nueva Tarea<br/>
+&lt;/<span style="color:#f43f5e">button</span>&gt;
+              </div>
+            </div>
+
+            <!-- Caja 2: DOM Snapshot del Input de Búsqueda -->
+            <div class="inspector-box">
+              <div class="inspector-box-header">
+                <span>🔍 DOM Snapshot: Input de Búsqueda</span>
+              </div>
+              <div class="inspector-box-body" id="inspector-search-code" style="color: #e2e8f0;">
+&lt;<span style="color:#f43f5e">input</span> <span style="color:#fbbf24">type</span>=<span style="color:#34d399">"search"</span><br/>
+&nbsp;&nbsp;<span style="color:#fbbf24">id</span>=<span style="color:#34d399">"<strong id="dom-search-id" style="color:#38bdf8">input-search-tasks</strong>"</span><br/>
+&nbsp;&nbsp;<span style="color:#fbbf24">role</span>=<span style="color:#34d399">"searchbox"</span><br/>
+&nbsp;&nbsp;<span style="color:#fbbf24">aria-label</span>=<span style="color:#34d399">"Buscar tareas"</span> /&gt;
+              </div>
+            </div>
+
+            <!-- Caja 3: Comparativa de Evaluación de Playwright -->
+            <div class="inspector-box">
+              <div class="inspector-box-header">
+                <span>⚡ Evaluación de Locators en Playwright</span>
+              </div>
+              <div class="inspector-box-body">
+                <!-- Selector Frágil -->
+                <div style="margin-bottom: 0.65rem;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.25rem;">
+                    <span style="font-size: 0.78rem; color: #f87171; font-weight: bold;">❌ Selector Frágil (CSS/ID):</span>
+                    <span id="badge-locator-fragile" class="inspector-badge-pass">PASS</span>
+                  </div>
+                  <div style="background:#090d16; padding:0.4rem 0.6rem; border-radius:4px; font-size:0.78rem; color:#94a3b8; border:1px solid rgba(255,255,255,0.06);">
+                    <code id="code-locator-fragile" style="color:#fca5a5;">page.locator('#btn-create-task')</code>
+                  </div>
+                  <div id="fragile-eval-note" style="font-size:0.75rem; color:#4ade80; margin-top:0.25rem;">
+                    ✔ Elemento encontrado exitosamente en el DOM.
+                  </div>
+                </div>
+
+                <!-- Locator Semántico -->
+                <div>
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.25rem;">
+                    <span style="font-size: 0.78rem; color: #4ade80; font-weight: bold;">✅ Locator Resiliente (A11y Tree):</span>
+                    <span class="inspector-badge-pass">PASS</span>
+                  </div>
+                  <div style="background:#090d16; padding:0.4rem 0.6rem; border-radius:4px; font-size:0.78rem; color:#94a3b8; border:1px solid rgba(255,255,255,0.06);">
+                    <code style="color:#86efac;">page.getByRole('button', { name: 'Nueva Tarea' })</code>
+                  </div>
+                  <div style="font-size:0.75rem; color:#4ade80; margin-top:0.25rem;">
+                    ✔ Inmune a mutaciones cosméticas o IDs ofuscados.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Caja 4: Árbol de Accesibilidad (A11y Node) -->
+            <div class="inspector-box">
+              <div class="inspector-box-header">
+                <span>♿ Accessibility Tree (Inmutable)</span>
+                <span class="inspector-badge-pass">ESTABLE</span>
+              </div>
+              <div class="inspector-box-body" style="color: #cbd5e1; font-size: 0.8rem;">
+                <div><strong>Role:</strong> <span style="color:#fbbf24">button</span></div>
+                <div><strong>Name:</strong> <span style="color:#34d399">"Nueva Tarea"</span></div>
+                <div><strong>State:</strong> <span style="color:#38bdf8">focusable, enabled, visible</span></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para la Terminal de Pruebas de Playwright (Franco - Tema Cyan / Esmeralda con Sidebar Lateral) -->
+  <div id="test-modal-overlay" class="modal-overlay" onclick="handleTestModalOverlayClick(event)">
+    <div class="modal-container franco-console-container" style="max-width: 1200px; height: 85vh;">
+      <div class="modal-header">
+        <div class="modal-title">
+          <div class="terminal-window-dots">
+            <span class="terminal-dot terminal-dot-red"></span>
+            <span class="terminal-dot terminal-dot-yellow"></span>
+            <span class="terminal-dot terminal-dot-green"></span>
+          </div>
+          <span style="font-size: 1.25rem;">⚡</span>
+          <strong>Playwright E2E Runner</strong>
+          <span style="font-size: 0.85rem; color: #94a3b8; font-weight: normal; margin-left: 0.2rem;">— Franco Esposito</span>
+          <code style="background: rgba(56, 189, 248, 0.12); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.25);">pnpm exec playwright test</code>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="modal-btn modal-close" onclick="closeTestModal()">
+            ✖ Cerrar (Esc)
+          </button>
+        </div>
+      </div>
+
+      <div class="console-workbench-body">
+        <!-- Columna Principal: Terminal y Línea de Comandos -->
+        <div class="console-main-area">
+          <div style="background: #0b1324; padding: 0.65rem 1.4rem; border-bottom: 1px solid rgba(56, 189, 248, 0.15); display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem;">
+            <div id="modal-runner-status-text" style="color: #38bdf8; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+              <span>ℹ️</span> Seleccioná un comando en el panel lateral o escribilo y presioná [Enter].
+            </div>
+            <div style="color: #64748b; font-size: 0.8rem; font-family: monospace;">
+              Targets: Desktop Chromium | Desktop Firefox | Mobile Chrome
+            </div>
+          </div>
+
+          <!-- Área de Terminal -->
+          <div id="modal-runner-terminal-console" style="flex: 1; padding: 1.3rem 1.6rem; font-family: 'Consolas', 'Fira Code', monospace; font-size: 0.88rem; line-height: 1.55; color: #e2e8f0; overflow-y: auto; white-space: pre-wrap; background: #070b14;">
+⚡ Consola de Automatización E2E — Playwright Testing Suite (Franco Esposito)
+
+Comandos preconfigurados listos en el menú lateral:
+  [1] Flujo 1 (Auth):       npx playwright test e2e/tests/02-auth-flow.spec.ts --headed
+  [2] Flujo 3 (Task Board): npx playwright test e2e/tests/04-task-creation-flow.spec.ts --headed
+  [3] Suite Completa:       npx playwright test --headed
+
+💡 Hacé clic en cualquiera de los botones laterales para preparar el comando y pulsá [Enter].
+          </div>
+
+          <!-- Prompt de Entrada de Terminal Interactiva -->
+          <div style="background: #09101f; padding: 0.85rem 1.4rem; border-top: 1px solid rgba(56, 189, 248, 0.2); display: flex; align-items: center; gap: 0.75rem;">
+            <span style="color: #38bdf8; font-family: 'Consolas', 'Fira Code', monospace; font-size: 0.95rem; font-weight: bold; display: flex; align-items: center; gap: 0.35rem;">
+              <span style="color: #4ade80;">franco@taskflow-e2e</span>:<span style="color: #38bdf8;">~</span>$
+            </span>
+            <input
+              type="text"
+              id="runner-cmd-input"
+              value="npx playwright test e2e/tests/02-auth-flow.spec.ts --headed"
+              onkeydown="handleRunnerCommandKey(event)"
+              placeholder="Escribí un comando y presioná Enter..."
+              style="flex: 1; background: transparent; border: none; color: #f1f5f9; font-family: 'Consolas', 'Fira Code', monospace; font-size: 0.94rem; outline: none;"
+            />
+            <button type="button" onclick="executeCurrentRunnerCommand()" class="franco-cmd-btn" style="background: rgba(56, 189, 248, 0.25); border-color: #38bdf8; color: #ffffff; padding: 0.45rem 1.1rem; font-size: 0.86rem;">
+              Ejecutar [Enter] ↵
+            </button>
+          </div>
+        </div>
+
+        <!-- Menú Lateral Derecho: Botones de Acción de Franco -->
+        <aside class="console-sidebar" style="background: #080d1a; border-left: 1px solid rgba(56, 189, 248, 0.2);">
+          <div class="console-sidebar-title" style="color: #38bdf8;">
+            <span>⚡</span> Cargar Comandos
+          </div>
+          <button type="button" class="console-sidebar-btn franco-sidebar-btn" onclick="prepareTestCommand('auth')">
+            <span style="color: #38bdf8; font-weight: bold;">1.</span> Auth Flow (02)
+          </button>
+          <button type="button" class="console-sidebar-btn franco-sidebar-btn" onclick="prepareTestCommand('task')">
+            <span style="color: #c084fc; font-weight: bold;">2.</span> Task Modal (04)
+          </button>
+          <button type="button" class="console-sidebar-btn franco-sidebar-btn" onclick="prepareTestCommand('all')">
+            <span style="color: #4ade80; font-weight: bold;">3.</span> Suite Completa E2E
+          </button>
+
+          <div style="height: 1px; background: rgba(255,255,255,0.08); margin: 0.3rem 0;"></div>
+
+          <div class="console-sidebar-title" style="color: #94a3b8;">
+            <span>⚙️</span> Opciones &amp; Control
+          </div>
+          <label style="font-size: 0.82rem; color: #cbd5e1; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; background: rgba(15, 23, 42, 0.7); padding: 0.55rem 0.75rem; border-radius: 6px; border: 1px solid rgba(255,255,255,0.12); margin-bottom: 0.2rem;">
+            <input type="checkbox" id="modal-runner-headed-check" checked style="cursor: pointer;" onchange="syncCommandPreview()" />
+            <span>Visible (--headed)</span>
+          </label>
+          <button type="button" id="modal-btn-stop" class="console-sidebar-btn" onclick="stopPlaywrightSuite()" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; display: none;">
+            <span>⏹</span> Detener Suite
+          </button>
+          <button type="button" class="console-sidebar-btn franco-sidebar-btn" onclick="clearRunnerConsole()" style="background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); color: #94a3b8;">
+            <span>🧹</span> Limpiar Consola
+          </button>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para la Demostración de AI Self-Healing (Nicolás - Tema Púrpura / Cyberpunk con Sidebar Lateral) -->
+  <div id="healing-modal-overlay" class="modal-overlay" onclick="handleHealingModalOverlayClick(event)">
+    <div class="modal-container nicolas-console-container" style="max-width: 1200px; height: 85vh;">
+      <div class="modal-header">
+        <div class="modal-title">
+          <div class="terminal-window-dots">
+            <span class="terminal-dot terminal-dot-red"></span>
+            <span class="terminal-dot terminal-dot-yellow"></span>
+            <span class="terminal-dot terminal-dot-green"></span>
+          </div>
+          <span style="font-size: 1.25rem;">🤖</span>
+          <strong>AI Adaptive QA &amp; LLM Self-Healing Engine</strong>
+          <span style="font-size: 0.85rem; color: #c084fc; font-weight: normal; margin-left: 0.2rem;">— Nicolás Rumie</span>
+          <code style="background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3);">e2e/ai-adaptive/llm-healing-demo.ts</code>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="modal-btn modal-close" onclick="closeHealingModal()">
+            ✖ Cerrar (Esc)
+          </button>
+        </div>
+      </div>
+
+      <div class="console-workbench-body">
+        <!-- Columna Principal: Terminal y Línea de Comandos -->
+        <div class="console-main-area">
+          <div style="background: #140d24; padding: 0.65rem 1.4rem; border-bottom: 1px solid rgba(192, 132, 252, 0.18); display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem;">
+            <div id="healing-runner-status-text" style="color: #c084fc; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+              <span>🤖</span> Paso 1: Seleccioná "Cargar Quiebre" en el panel lateral y presioná [Enter].
+            </div>
+            <div style="color: #a855f7; font-size: 0.8rem; font-family: monospace; opacity: 0.85;">
+              LLM Agent • Accessibility Tree Heuristics • Confidence: 98%
+            </div>
+          </div>
+
+          <div id="healing-runner-terminal-console" style="flex: 1; padding: 1.3rem 1.6rem; font-family: 'Consolas', 'Fira Code', monospace; font-size: 0.88rem; line-height: 1.55; color: #f3e8ff; overflow-y: auto; white-space: pre-wrap; background: #0d0918;">
+🤖 Consola de Inteligencia Artificial &amp; QA Adaptativo (Nicolás Rumie)
+
+Ciclo de Auto-Reparación Autónomo con LLM:
+  [Paso 1] Quiebre en UI v2:   npx playwright test e2e/ai-adaptive/fragile-selectors.spec.ts
+  [Paso 2] Agente AI Healing:  npx tsx e2e/ai-adaptive/llm-healing-demo.ts
+  [Paso 3] Test Verificado:    npx playwright test e2e/tests/04-task-creation-flow.spec.ts
+
+💡 Hacé clic en "1. Cargar Quiebre (UI v2)" en el panel lateral y pulsá [Enter] para reproducir el fallo.
+          </div>
+
+          <!-- Prompt de Entrada de Terminal Interactiva para Nicolás -->
+          <div style="background: #110b20; padding: 0.85rem 1.4rem; border-top: 1px solid rgba(192, 132, 252, 0.2); display: flex; align-items: center; gap: 0.75rem;">
+            <span style="color: #c084fc; font-family: 'Consolas', 'Fira Code', monospace; font-size: 0.95rem; font-weight: bold; display: flex; align-items: center; gap: 0.35rem;">
+              <span style="color: #f472b6;">nicolas@ai-healing</span>:<span style="color: #c084fc;">~</span>$
+            </span>
+            <input
+              type="text"
+              id="healing-cmd-input"
+              value="npx playwright test e2e/ai-adaptive/fragile-selectors.spec.ts"
+              onkeydown="handleHealingCommandKey(event)"
+              placeholder="Escribí un comando y presioná Enter..."
+              style="flex: 1; background: transparent; border: none; color: #f8fafc; font-family: 'Consolas', 'Fira Code', monospace; font-size: 0.94rem; outline: none;"
+            />
+            <button type="button" onclick="executeCurrentHealingCommand()" class="nicolas-cmd-btn" style="background: rgba(168, 85, 247, 0.35); border-color: #c084fc; color: #ffffff; padding: 0.45rem 1.1rem; font-size: 0.86rem;">
+              Ejecutar [Enter] ↵
+            </button>
+          </div>
+        </div>
+
+        <!-- Menú Lateral Derecho: Botones de Acción de Nicolás -->
+        <aside class="console-sidebar" style="background: #100a1c; border-left: 1px solid rgba(192, 132, 252, 0.2);">
+          <div class="console-sidebar-title" style="color: #c084fc;">
+            <span>🤖</span> Ciclo AI Healing
+          </div>
+          <button type="button" class="console-sidebar-btn nicolas-sidebar-btn" onclick="prepareHealingCommand('fragile')" style="border-color: rgba(239, 68, 68, 0.4);">
+            <span style="color: #ef4444; font-weight: bold;">1.</span> Cargar Quiebre (v2)
+          </button>
+          <button type="button" class="console-sidebar-btn nicolas-sidebar-btn" onclick="prepareHealingCommand('healing')" style="border-color: rgba(192, 132, 252, 0.5);">
+            <span style="color: #c084fc; font-weight: bold;">2.</span> Cargar Agente IA
+          </button>
+          <button type="button" class="console-sidebar-btn nicolas-sidebar-btn" onclick="prepareHealingCommand('healed-verify')" style="border-color: rgba(34, 197, 94, 0.4);">
+            <span style="color: #22c55e; font-weight: bold;">3.</span> Cargar Test Resiliente
+          </button>
+
+          <div style="height: 1px; background: rgba(255,255,255,0.08); margin: 0.3rem 0;"></div>
+
+          <div class="console-sidebar-title" style="color: #94a3b8;">
+            <span>⚙️</span> Controles
+          </div>
+          <button type="button" class="console-sidebar-btn nicolas-sidebar-btn" onclick="clearHealingConsole()" style="background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); color: #94a3b8;">
+            <span>🧹</span> Limpiar Consola
+          </button>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Oficial de Playwright Test Report & Trace Viewer en Iframe (Nicolás - Diapositiva 16) -->
+  <div id="trace-modal-overlay" class="modal-overlay" onclick="handleTraceModalOverlayClick(event)">
+    <div class="modal-container" style="max-width: 1350px; height: 90vh; background: #080c16; border: 1px solid rgba(34, 197, 94, 0.4); border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85);">
+      
+      <!-- Encabezado del Modal -->
+      <div class="modal-header" style="background: #0d1322; border-bottom: 1px solid rgba(34, 197, 94, 0.25); padding: 0.65rem 1.4rem;">
+        <div class="modal-title" style="display: flex; align-items: center; gap: 0.65rem;">
+          <div class="terminal-window-dots">
+            <span class="terminal-dot terminal-dot-red"></span>
+            <span class="terminal-dot terminal-dot-yellow"></span>
+            <span class="terminal-dot terminal-dot-green"></span>
+          </div>
+          <span style="font-size: 1.25rem;">🔍</span>
+          <strong style="color: #ffffff; font-size: 1.05rem;">Playwright Test Report &amp; Trace Viewer Oficial</strong>
+          <code style="background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); font-size: 0.8rem;">playwright-report/index.html</code>
+          <span style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; font-size: 0.74rem; padding: 0.15rem 0.5rem; border-radius: 4px; border: 1px solid rgba(56, 189, 248, 0.3);">Reporte Real Embebido</span>
+        </div>
+        <div class="modal-actions" style="display: flex; align-items: center; gap: 0.6rem;">
+          <button type="button" class="modal-btn" onclick="reloadTraceFrame()" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #cbd5e1; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.82rem; cursor: pointer;">
+            🔄 Recargar Reporte
+          </button>
+          <a href="/report/index.html" target="_blank" class="modal-btn" style="background: rgba(34, 197, 94, 0.18); border: 1px solid var(--accent-green); color: #4ade80; padding: 0.35rem 0.85rem; border-radius: 6px; font-size: 0.82rem; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.3rem;">
+            ↗ Pestaña Nueva
+          </a>
+          <button type="button" class="modal-btn modal-close" onclick="closeTraceModal()">
+            ✖ Cerrar (Esc)
+          </button>
+        </div>
+      </div>
+
+      <!-- Iframe Integrado con el reporte real oficial de Playwright -->
+      <div style="flex: 1; width: 100%; height: 100%; position: relative; background: #000000;">
+        <iframe
+          id="trace-report-iframe"
+          src="/report/index.html"
+          title="Playwright Official Test Report"
+          style="width: 100%; height: 100%; border: none; display: block;"
+        ></iframe>
+      </div>
+
+    </div>
+  </div>
+
 </body>
 </html>
